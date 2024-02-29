@@ -33,4 +33,4 @@ class LotteryController {
     }
 }
 
-module.exports = LotteryController
+export default LotteryController

@@ -1,19 +1,27 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-const ClubController = require('./apiControllers/ClubController');
-const LotteryController = require('./apiControllers/LotteryController');
-const ClientController = require('./apiControllers/ClientController');
-const ClubBetController = require('./apiControllers/ClubBetController');
-const LotteryBetController = require('./apiControllers/LotteryBetController');
-const LoginController = require('./apiControllers/LoginController');
+import createError from "http-errors"
+import express from "express"
+import path from "path"
+import { fileURLToPath } from 'url';
+import cookieParser from "cookie-parser";
+import logger from "morgan"
+import ClubController from "./apiControllers/ClubController.js";
+import LotteryController from './apiControllers/LotteryController.js';
+import ClientController from './apiControllers/ClientController.js';
+import ClubBetController from './apiControllers/ClubBetController.js';
+import LotteryBetController from './apiControllers/LotteryBetController.js';
+import LoginController from './apiControllers/LoginController.js';
+import { initializeApp } from 'firebase/app'
+import firebaseConfig from "./lib/firebaseConfig.js"
 
 
-var app = express();
+export var app = express();
+
+// Init firebase
+const appFirebase = initializeApp(firebaseConfig)
 
 // view engine setup
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -66,7 +74,8 @@ app.use('/v1.0/updateLotteryBet', lotteryBetController.updateLotteryBet);
 app.use('/v1.0', loginController.login)
 
 // WEB routes
-app.use('/', require('./routes/index'));
+import router from "./routes/index.js"
+app.use('/', router);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -84,4 +93,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+export default app;

@@ -33,4 +33,4 @@ class ClubController {
     }
 }
 
-module.exports = ClubController
+export default ClubController

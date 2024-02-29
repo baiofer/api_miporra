@@ -33,4 +33,4 @@ class ClubBetController {
     }
 }
 
-module.exports = ClubBetController
+export default ClubBetController
