@@ -17,7 +17,7 @@ import firebaseConfig from "./lib/firebaseConfig.js"
 export var app = express();
 
 // Init firebase
-const appFirebase = initializeApp(firebaseConfig)
+export const appFirebase = initializeApp(firebaseConfig)
 
 // view engine setup
 const __filename = fileURLToPath(import.meta.url);

@@ -1,8 +1,18 @@
+import { appFirebase } from "../app.js"
+import { getFirestore, collection, getDocs } from "firebase/firestore"
+
 class ClientController {
 
-    getClients (req, res, next) {
+    async getClients (req, res, next) {
+        const db = getFirestore(appFirebase)
         try {
-
+            const clients = await getDocs(collection(db, "Clients"))
+            clients.forEach( doc => {
+                const data = doc.data()
+                data.id = doc.id
+                console.log(doc.id, " => ", doc.data())
+                res.json(data)
+            })
         } catch (error) {
             next(error)
         }
