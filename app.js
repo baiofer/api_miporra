@@ -33,37 +33,40 @@ const lotteryBetController = new LotteryBetController
 const loginController = new LoginController
 
 // Clients
-app.get('/v1.0/clients', clientController.getClients());
-app.post('/v1.0/newClient', clientController.createClient());
-app.delete('/v1.0/deleteClient', clientController.deleteClient());
-app.update('/v1.0/updateClient', clientController.updateClient());
+app.use('/v1.0/clients', clientController.getClients);
+app.use('/v1.0/newClient', clientController.createClient);
+app.use('/v1.0/deleteClient', clientController.deleteClient);
+app.use('/v1.0/updateClient', clientController.updateClient);
 
 // Clubs
-app.get('/v1.0/clubs', clubController.getClubs());
-app.post('/v1.0/newClub', clubController.createClub());
-app.delete('/v1.0/deleteClun', clubController.deleteClub());
-app.update('/v1.0/updateClub', clubController.updateClub());
+app.use('/v1.0/clubs', clubController.getClubs);
+app.use('/v1.0/newClub', clubController.createClub);
+app.use('/v1.0/deleteClun', clubController.deleteClub);
+app.use('/v1.0/updateClub', clubController.updateClub);
 
 // Lotteries
-app.get('/v1.0/lotteries', lotteryController.getLotteries());
-app.post('/v1.0/createLottery', lotteryController.createLottery());
-app.delete('/v1.0/deleteLottery', lotteryController.deleteLottery());
-app.update('/v1.0/updateLottery', lotteryController.updateLottery());
+app.use('/v1.0/lotteries', lotteryController.getLotteries);
+app.use('/v1.0/createLottery', lotteryController.createLottery);
+app.use('/v1.0/deleteLottery', lotteryController.deleteLottery);
+app.use('/v1.0/updateLottery', lotteryController.updateLottery);
 
 // Club bets
-app.get('/v1.0/clubBets', clubBetController.getClubBets());
-app.post('/v1.0/createClubBet', clubBetController.createClubBet());
-app.delete('/v1.0/deleteClubBet', clubBetController.deleteClubBet());
-app.update('/v1.0/updateClubBet', clubBetController.updateClubBet());
+app.use('/v1.0/clubBets', clubBetController.getClubBets);
+app.use('/v1.0/createClubBet', clubBetController.createClubBet);
+app.use('/v1.0/deleteClubBet', clubBetController.deleteClubBet);
+app.use('/v1.0/updateClubBet', clubBetController.updateClubBet);
 
 // Lottery bets
-app.get('/v1.0/lotteryBets', lotteryBetController.getLotteryBets());
-app.post('/v1.0/createLotteryBet', lotteryBetController.createLotteryBet());
-app.delete('/v1.0/deleteLotteryBet', lotteryBetController.deleteLotteryBet());
-app.update('/v1.0/updateLotteryBet', lotteryBetController.updateLotteryBet());
+app.use('/v1.0/lotteryBets', lotteryBetController.getLotteryBets);
+app.use('/v1.0/createLotteryBet', lotteryBetController.createLotteryBet);
+app.use('/v1.0/deleteLotteryBet', lotteryBetController.deleteLotteryBet);
+app.use('/v1.0/updateLotteryBet', lotteryBetController.updateLotteryBet);
 
 // Login
-app.post('/v1.0', loginController.login())
+app.use('/v1.0', loginController.login)
+
+// WEB routes
+app.use('/', require('./routes/index'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
