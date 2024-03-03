@@ -4,6 +4,7 @@ import path from "path"
 import { fileURLToPath } from 'url';
 import cookieParser from "cookie-parser";
 import logger from "morgan"
+import router from "./routes/index.js"
 import ClubController from "./apiControllers/ClubController.js";
 import LotteryController from './apiControllers/LotteryController.js';
 import ClientController from './apiControllers/ClientController.js';
@@ -49,9 +50,8 @@ const loginController = new LoginController
 // Clients
 app.use('/v1.0/clients', clientController.getClients);
 app.use('/v1.0/newClient', upload.single('logo'), clientController.createClient);
-//app.use('/v1.0/newClient', clientController.createClient);
-app.use('/v1.0/deleteClient', clientController.deleteClient);
-app.use('/v1.0/updateClient', clientController.updateClient);
+app.use('/v1.0/deleteClient/:id', clientController.deleteClient);
+app.use('/v1.0/updateClient/:id', upload.single('logo'), clientController.updateClient);
 
 // Clubs
 app.use('/v1.0/clubs', clubController.getClubs);
@@ -81,7 +81,7 @@ app.use('/v1.0/updateLotteryBet', lotteryBetController.updateLotteryBet);
 app.use('/v1.0', loginController.login)
 
 // WEB routes
-import router from "./routes/index.js"
+
 app.use('/', router);
 
 // catch 404 and forward to error handler
@@ -91,6 +91,13 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
+  console.log(err)
+  // If error in API request
+  // response of error in json format
+  if (req.originalUrl.startsWith('/v1.0/')) {
+    res.json({ error: err.message || "Not found"})
+    return
+  }
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
