@@ -12,12 +12,14 @@ import LotteryBetController from './apiControllers/LotteryBetController.js';
 import LoginController from './apiControllers/LoginController.js';
 import { initializeApp } from 'firebase/app'
 import firebaseConfig from "./lib/firebaseConfig.js"
+import swaggerMiddleware from "./lib/swaggerMiddleware.js";
 
 
 export var app = express();
 
 // Init firebase
 export const appFirebase = initializeApp(firebaseConfig)
+
 
 // view engine setup
 const __filename = fileURLToPath(import.meta.url);
@@ -31,6 +33,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+swaggerMiddleware(app)
 
 // API routes
 const clubController = new ClubController

@@ -3,6 +3,28 @@ import { getFirestore, collection, getDocs } from "firebase/firestore"
 
 class ClientController {
 
+    /**
+ * @swagger
+ * /clients:
+ *  get:
+ *      tags:
+ *          - Clients
+ *      summary: List all the clients
+ *      responses:
+ *          200:
+ *              description: The list of clients
+ *              content: 
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              type: object
+ *                              properties:
+ *                                  id:
+ *                                      type: string
+ *                                  name:
+ *                                      type: string
+ */
     async getClients (req, res, next) {
         const db = getFirestore(appFirebase)
         try {
