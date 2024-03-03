@@ -13,6 +13,7 @@ import LoginController from './apiControllers/LoginController.js';
 import { initializeApp } from 'firebase/app'
 import firebaseConfig from "./lib/firebaseConfig.js"
 import swaggerMiddleware from "./lib/swaggerMiddleware.js";
+import multer from 'multer'
 
 
 export var app = express();
@@ -20,12 +21,14 @@ export var app = express();
 // Init firebase
 export const appFirebase = initializeApp(firebaseConfig)
 
-
 // view engine setup
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+// Setup multer for real files (client logos)
+const upload = multer({ dest: 'uploads/' })
 
 // Middlewares
 app.use(logger('dev'));
@@ -45,7 +48,8 @@ const loginController = new LoginController
 
 // Clients
 app.use('/v1.0/clients', clientController.getClients);
-app.use('/v1.0/newClient', clientController.createClient);
+app.use('/v1.0/newClient', upload.single('logo'), clientController.createClient);
+//app.use('/v1.0/newClient', clientController.createClient);
 app.use('/v1.0/deleteClient', clientController.deleteClient);
 app.use('/v1.0/updateClient', clientController.updateClient);
 

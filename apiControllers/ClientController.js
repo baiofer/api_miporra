@@ -1,57 +1,40 @@
 import { appFirebase } from "../app.js"
-import { getFirestore, collection, getDocs } from "firebase/firestore"
-
-/**
- * @swagger
- * components:
- *   schemas:
- *     Clients:
- *       type: object
- *       required:
- *         - name
- *         - email
- *         - logo
- *       properties:
- *         id: 
- *           type: string
- *           description: The auto-generated id of the client
- *         name:
- *           type: string
- *           description: The name of the client
- *         logo:
- *           type: string
- *           description: The logo of the client
- *         createdAt: The day the client was added
- *       example:
- *         id: d5fe_Asz
- *         logo: /public/logo.png
- *         name: Fernando Jarilla 
- *         createdAt: 2024-03-03T09:43:06.157Z  
- */
+import { getFirestore, collection, getDocs, addDoc, setDoc } from "firebase/firestore"
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
+import { unlink } from 'fs/promises'
 
 
 class ClientController {
 
     /**
-     * @swagger
-     * /v1.0/clients:
-     *   get:
-     *     description: List all the clients
-     *     responses:
-     *       200:
-     *         description: A list of clients
-     */
+ * @swagger
+ * /v1.0/clients:
+ *   get:
+ *     summary: Retrieve a list of clients
+ *     description: Retrieve a list of clients from the Clients collection. The list can be used to populate a client management dashboard.
+ *     responses:
+ *       200:
+ *         description: A list of clients was retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Clients'
+ *       500:
+ *         description: An error occurred while retrieving the clients.
+ */
     async getClients (req, res, next) {
-        console.log('GET /v1.0/clients was called')
         const db = getFirestore(appFirebase)
         try {
+            const listOfClients = []
             const clients = await getDocs(collection(db, "Clients"))
             clients.forEach( doc => {
                 const data = doc.data()
                 data.id = doc.id
-                console.log(doc.id, " => ", doc.data())
-                res.json(data)
+                listOfClients.push(data)
             })
+            res.json(listOfClients)
         } catch (error) {
             next(error)
         }
@@ -61,27 +44,61 @@ class ClientController {
      * @swagger
      * /v1.0/clients:
      *   post:
-     *     description: Create a new client
+     *     summary: Create a new client
+     *     description: Create a new client and save it to the Clients collection. The client's logo is uploaded to Firebase Storage and the download URL is saved to Firestore.
      *     requestBody:
      *       required: true
      *       content:
-     *         application/json:
+     *         multipart/form-data:
      *           schema:
-     *             $ref: '#/components/schemas/Clients'
+     *             type: object
+     *             properties:
+     *               name:
+     *                 type: string
+     *                 description: The name of the client.
+     *               email:
+     *                 type: string
+     *                 description: The email of the client.
+     *               logo:
+     *                 type: string
+     *                 format: binary
+     *                 description: The logo of the client.
      *     responses:
      *       200:
-     *         description: The created client
+     *         description: The client was created successfully.
      *         content:
      *           application/json:
      *             schema:
      *               $ref: '#/components/schemas/Clients'
+     *       500:
+     *         description: An error occurred while creating the client.
      */
-    createClient (req, res, next) {
-        console.log('POST /v1.0/clients was called')
+    async createClient(req, res, next) {
+        const { name, email } = req.body
+        const db = getFirestore(appFirebase)
+        const storage = getStorage()
         try {
-
+            // Upload file to firebase storage
+            const storageRef = ref(storage, `logo/${req.file.filename}`)
+            const snapshot = await uploadBytesResumable(storageRef, req.file)
+            const logoUrl = await getDownloadURL(snapshot.ref)
+            // Delete file from local storage
+            await unlink(`uploads/${req.file.filename}`)
+            // Create client in firestore
+            const createdAt = new Date().toISOString()
+            const clientToCreate = {
+                name,
+                email,
+                logo: logoUrl,
+                createdAt,
+            }
+            const createdClient = await addDoc(collection(db, 'Clients'), clientToCreate)
+            // Add id to createdClient
+            clientToCreate.id = createdClient.id
+            // Return response
+            res.json(clientToCreate);
         } catch (error) {
-            next(error)
+            next(error);
         }
     }
 
