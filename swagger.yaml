@@ -1,0 +1,47 @@
+openapi: "3.0.0"
+info:
+  version: "1.0.0"
+  title: "Mi porra API"
+  description: "API documentation for use"
+  contact:
+    name: "Fernando Jarilla"
+    url: "https://www.miporra.es/"
+servers:
+  - url: "http://localhost:3200/v1.0"
+paths:
+  /clients:
+    get:
+      description: "List all the clients"
+      responses:
+        "200":
+          description: "A list of clients"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Clients"
+components:
+  schemas:
+    Clients:
+      type: "object"
+      required:
+        - "name"
+        - "email"
+        - "logo"
+      properties:
+        id:
+          type: "string"
+          description: "The auto-generated id of the client"
+        name:
+          type: "string"
+          description: "The name of the client"
+        logo:
+          type: "string"
+          description: "The logo of the client"
+        createdAt:
+          type: "string"
+          description: "The day the client was added"
+      example:
+        id: "d5fe_Asz"
+        logo: "/public/logo.png"
+        name: "Fernando Jarilla"
+        createdAt: "2024-03-03T09:43:06.157Z"

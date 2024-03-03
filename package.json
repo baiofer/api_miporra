@@ -18,7 +18,8 @@
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.0"
+    "swagger-ui-express": "^5.0.0",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "@babel/helper-compilation-targets": "^7.23.6",
