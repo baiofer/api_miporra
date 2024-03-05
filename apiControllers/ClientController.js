@@ -3,6 +3,7 @@ import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, getDoc, dele
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage"
 import { unlink } from 'fs/promises'
 import fs from 'fs'
+import { resizeImage } from "../lib/resizeImage.js"
 
 
 class ClientController {
@@ -93,8 +94,8 @@ class ClientController {
             let logoUrl = ''
             if (req.file) {
                 const storageRef = ref(storage, `logo/${req.file.filename}`);
-                const imageData = fs.readFileSync(`uploads/${req.file.filename}`)
-                const snapshot = await uploadBytes(storageRef, imageData);
+                const imageResized = await resizeImage(`uploads/${req.file.filename}`)
+                const snapshot = await uploadBytes(storageRef, imageResized);
                 logoUrl = await getDownloadURL(snapshot.ref);
                 await unlink(`uploads/${req.file.filename}`);
             } 
@@ -112,6 +113,7 @@ class ClientController {
             // Return response
             res.json({ results: clientToCreate });
         } catch (error) {
+            console.log(error)
             res.status(500).json({ error: 'An error occurred while creating the client.'})
         }
     }
