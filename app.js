@@ -15,6 +15,7 @@ import { initializeApp } from 'firebase/app'
 import firebaseConfig from "./lib/firebaseConfig.js"
 import swaggerMiddleware from "./lib/swaggerMiddleware.js";
 import multer from 'multer'
+import { upload } from './lib/uploadConfig.js'
 
 
 export var app = express();
@@ -27,9 +28,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-
-// Setup multer for real files (client logos)
-const upload = multer({ dest: 'uploads/' })
 
 // Middlewares
 app.use(logger('dev'));
@@ -91,7 +89,6 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
-  console.log(err)
   // If error in API request
   // response of error in json format
   if (req.originalUrl.startsWith('/v1.0/')) {

@@ -1,7 +1,8 @@
 import { appFirebase } from "../app.js"
-import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, getDoc } from "firebase/firestore"
-import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage"
+import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, getDoc, deleteDoc } from "firebase/firestore"
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage"
 import { unlink } from 'fs/promises'
+import fs from 'fs'
 
 
 class ClientController {
@@ -51,7 +52,7 @@ class ClientController {
      *   name: Clients
      *   description: Operations about clients
      * 
-     * /v1.0/clients:
+     * /v1.0/newClient:
      *   post:
      *     tags: [Clients]
      *     summary: Create a new client
@@ -88,13 +89,16 @@ class ClientController {
         const db = getFirestore(appFirebase)
         const storage = getStorage()
         try {
-            // Upload file to firebase storage
-            const storageRef = ref(storage, `logo/${req.file.filename}`)
-            const snapshot = await uploadBytesResumable(storageRef, req.file)
-            const logoUrl = await getDownloadURL(snapshot.ref)
-            // Delete file from local storage
-            await unlink(`uploads/${req.file.filename}`)
-            // Create client in firestore
+            //Get file and store it if exits
+            let logoUrl = ''
+            if (req.file) {
+                const storageRef = ref(storage, `logo/${req.file.filename}`);
+                const imageData = fs.readFileSync(`uploads/${req.file.filename}`)
+                const snapshot = await uploadBytes(storageRef, imageData);
+                logoUrl = await getDownloadURL(snapshot.ref);
+                await unlink(`uploads/${req.file.filename}`);
+            } 
+            // Create client
             const createdAt = new Date().toISOString()
             const clientToCreate = {
                 name,
@@ -108,7 +112,7 @@ class ClientController {
             // Return response
             res.json({ results: clientToCreate });
         } catch (error) {
-            next(error)
+            res.status(500).json({ error: 'An error occurred while creating the client.'})
         }
     }
 
@@ -129,9 +133,20 @@ class ClientController {
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/Clients'
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: The name of the client.
+ *               email:
+ *                 type: string
+ *                 description: The email of the client.
+ *               logo:
+ *                 type: string
+ *                 format: binary
+ *                 description: The logo of the client.
  *     responses:
  *       200:
  *         description: The client was updated successfully.
@@ -154,12 +169,14 @@ class ClientController {
         try {
             const clientRef = doc(db, 'Clients', id);
             const clientToUpdate = {};
+            // Update data if exits
             if (name) clientToUpdate.name = name;
             if (email) clientToUpdate.email = email;
             if (req.file) {
                 const storageRef = ref(storage, `logo/${req.file.filename}`);
-                const snapshot = await uploadBytesResumable(storageRef, req.file);
-                const logoUrl = await getDownloadURL(snapshot.ref);
+                const imageData = fs.readFileSync(`uploads/${req.file.filename}`)
+                const snapshot = await uploadBytes(storageRef, imageData);
+                logoUrl = await getDownloadURL(snapshot.ref);
                 clientToUpdate.logo = logoUrl;
                 await unlink(`uploads/${req.file.filename}`);
             }
@@ -194,11 +211,9 @@ class ClientController {
      *         description: An error occurred while deleting the client.
      */
     async deleteClient (req, res, next) {
-        console.log('DELETE')
         const { id } = req.params;
-        console.log(id)
         if (!id) {
-            throw new Error(`Not client delivert.`);
+            throw new Error(`Not client delivery.`);
         }
         const db = getFirestore(appFirebase);
         const storage = getStorage();
@@ -210,13 +225,19 @@ class ClientController {
             }
             const clientData = clientSnap.data();
             const logoUrl = clientData.logo;
-            const logoName = logoUrl.split('/').pop();
-            const logoRef = ref(storage, `logo/${logoName}`);
-            await deleteObject(logoRef);
+            const decodedUrl = decodeURIComponent(logoUrl);
+            const logoPath = decodedUrl.split(/\/o\/(.+)\?/)[1];
+            console.log(logoPath)
+            const logoRef = ref(storage, `${logoPath}`);
             await deleteDoc(clientRef);
+            await deleteObject(logoRef);
             res.json({ message: `Client '${id}' was deleted successfully.` });
         } catch (error) {
-            res.status(404).json({ error: error.message})
+            if (error.code === 'storage/object-not-found') {
+                res.json({ message: `Client '${id}' was deleted successfully!.` });
+            } else {
+                res.status(404).json({ error: error.message})
+            }
         }
     }
 }
