@@ -8,7 +8,7 @@ import { resizeImage } from "../lib/resizeImage.js"
 
 class ClientController {
 
-    /**
+/**
  * @swagger
  * tags:
  *   name: Clients
@@ -75,6 +75,9 @@ class ClientController {
      *                 type: string
      *                 format: binary
      *                 description: The logo of the client.
+     *               password:
+     *                 type: string
+     *                 description: The password of the client. 
      *     responses:
      *       200:
      *         description: The client was created successfully.
@@ -86,7 +89,7 @@ class ClientController {
      *         description: An error occurred while creating the client.
      */
     async createClient(req, res, next) {
-        const { name, email } = req.body
+        const { name, email, password } = req.body
         const db = getFirestore(appFirebase)
         const storage = getStorage()
         try {
@@ -104,6 +107,7 @@ class ClientController {
             const clientToCreate = {
                 name,
                 email,
+                password,
                 logo: logoUrl,
                 createdAt,
             }
@@ -119,73 +123,89 @@ class ClientController {
     }
 
     /**
- * @swagger
- * /v1.0/updateClient/{id}:
- *   put:
- *     tags: [Clients]
- *     summary: Update a client
- *     description: Update a client's details in the Clients collection.
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: The id of the client to update.
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *                 description: The name of the client.
- *               email:
- *                 type: string
- *                 description: The email of the client.
- *               logo:
- *                 type: string
- *                 format: binary
- *                 description: The logo of the client.
- *     responses:
- *       200:
- *         description: The client was updated successfully.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Clients'
- *       400:
- *         description: The request was invalid.
- *       404:
- *         description: The client was not found.
- *       500:
- *         description: An error occurred while updating the client.
- */
+     * @swagger
+     * /v1.0/updateClient/{id}:
+     *   put:
+     *     tags: [Clients]
+     *     summary: Update a client
+     *     description: Update a client's details in the Clients collection.
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         required: true
+     *         description: The id of the client to update.
+     *         schema:
+     *           type: string
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         multipart/form-data:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               name:
+     *                 type: string
+     *                 description: The name of the client.
+     *               email:
+     *                 type: string
+     *                 description: The email of the client.
+     *               logo:
+     *                 type: string
+     *                 format: binary
+     *                 description: The logo of the client.
+     *               password:
+     *                 type: string
+     *                 description: The password of the client.
+     *     responses:
+     *       200:
+     *         description: The client was updated successfully.
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Clients'
+     *       400:
+     *         description: The request was invalid.
+     *       404:
+     *         description: The client was not found.
+     *       500:
+     *         description: An error occurred while updating the client.
+     */
     async updateClient (req, res, next) {
-        const { name, email } = req.body;
+        const { name, email, password } = req.body;
         const { id } = req.params;
         const db = getFirestore(appFirebase);
         const storage = getStorage();
         try {
             const clientRef = doc(db, 'Clients', id);
+            // get the client register
+            const client = await (await getDoc(clientRef)).data()
             const clientToUpdate = {};
             // Update data if exits
             if (name) clientToUpdate.name = name;
             if (email) clientToUpdate.email = email;
+            if (password) clientToUpdate.password = password;
             if (req.file) {
+                // Get the actual logo path
+                const previousLogoUrl = client.logo
+                // Get the image
                 const storageRef = ref(storage, `logo/${req.file.filename}`);
                 const imageData = fs.readFileSync(`uploads/${req.file.filename}`)
                 const snapshot = await uploadBytes(storageRef, imageData);
-                logoUrl = await getDownloadURL(snapshot.ref);
+                const logoUrl = await getDownloadURL(snapshot.ref);
                 clientToUpdate.logo = logoUrl;
                 await unlink(`uploads/${req.file.filename}`);
+                // Delete previous image in storage
+                const decodedUrl = decodeURIComponent(previousLogoUrl);
+                const logoPath = decodedUrl.split(/\/o\/(.+)\?/)[1];
+                const logoRef = ref(storage, `${logoPath}`);
+                await deleteObject(logoRef);
             }
+            // Update client
             clientToUpdate.modifiedAt = new Date().toISOString()
             await updateDoc(clientRef, clientToUpdate);
             res.json({ results: { id, ...clientToUpdate } });
         } catch (error) {
+            console.log(error)
             res.status(404).json({ error: `The client '${req.params.id}' was not found.`})
         }
     }
@@ -229,7 +249,6 @@ class ClientController {
             const logoUrl = clientData.logo;
             const decodedUrl = decodeURIComponent(logoUrl);
             const logoPath = decodedUrl.split(/\/o\/(.+)\?/)[1];
-            console.log(logoPath)
             const logoRef = ref(storage, `${logoPath}`);
             await deleteDoc(clientRef);
             await deleteObject(logoRef);

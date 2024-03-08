@@ -54,29 +54,30 @@ app.use('/v1.0/updateClient/:id', upload.single('logo'), clientController.update
 // Clubs
 app.use('/v1.0/clubs', clubController.getClubs);
 app.use('/v1.0/newClub', clubController.createClub);
-app.use('/v1.0/deleteClun', clubController.deleteClub);
-app.use('/v1.0/updateClub', clubController.updateClub);
+app.use('/v1.0/updateClub/:id', clubController.updateClub);
+app.use('/v1.0/deleteClub/:id', clubController.deleteClub);
+
 
 // Lotteries
 app.use('/v1.0/lotteries', lotteryController.getLotteries);
-app.use('/v1.0/createLottery', lotteryController.createLottery);
-app.use('/v1.0/deleteLottery', lotteryController.deleteLottery);
-app.use('/v1.0/updateLottery', lotteryController.updateLottery);
+app.use('/v1.0/newLottery', lotteryController.createLottery);
+app.use('/v1.0/deleteLottery/:id', lotteryController.deleteLottery);
+app.use('/v1.0/updateLottery/:id', lotteryController.updateLottery);
 
 // Club bets
 app.use('/v1.0/clubBets', clubBetController.getClubBets);
-app.use('/v1.0/createClubBet', clubBetController.createClubBet);
-app.use('/v1.0/deleteClubBet', clubBetController.deleteClubBet);
-app.use('/v1.0/updateClubBet', clubBetController.updateClubBet);
+app.use('/v1.0/newClubBet', clubBetController.createClubBet);
+app.use('/v1.0/deleteClubBet/:id', clubBetController.deleteClubBet);
+app.use('/v1.0/updateClubBet/:id', clubBetController.updateClubBet);
 
 // Lottery bets
 app.use('/v1.0/lotteryBets', lotteryBetController.getLotteryBets);
-app.use('/v1.0/createLotteryBet', lotteryBetController.createLotteryBet);
-app.use('/v1.0/deleteLotteryBet', lotteryBetController.deleteLotteryBet);
-app.use('/v1.0/updateLotteryBet', lotteryBetController.updateLotteryBet);
+app.use('/v1.0/newLotteryBet', lotteryBetController.createLotteryBet);
+app.use('/v1.0/deleteLotteryBet/:id', lotteryBetController.deleteLotteryBet);
+app.use('/v1.0/updateLotteryBet/:id', lotteryBetController.updateLotteryBet);
 
 // Login
-app.use('/v1.0', loginController.login)
+app.use('/v1.0/login', loginController.login)
 
 // WEB routes
 
