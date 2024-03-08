@@ -4,9 +4,16 @@ import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "fire
 import { unlink } from 'fs/promises'
 import fs from 'fs'
 import { resizeImage } from "../lib/resizeImage.js"
+import bcrypt from 'bcrypt'
 
 
 class ClientController {
+
+    // Function to hash a password
+    hashPassword = (plainPassword) => {
+        console.log(plainPassword)
+        return bcrypt.hash(plainPassword, 7)
+    }
 
 /**
  * @swagger
@@ -88,7 +95,7 @@ class ClientController {
      *       500:
      *         description: An error occurred while creating the client.
      */
-    async createClient(req, res, next) {
+    createClient = async (req, res, next) => {
         const { name, email, password } = req.body
         const db = getFirestore(appFirebase)
         const storage = getStorage()
@@ -102,18 +109,20 @@ class ClientController {
                 logoUrl = await getDownloadURL(snapshot.ref);
                 await unlink(`uploads/${req.file.filename}`);
             } 
+            const newPassword = await this.hashPassword(password)
             // Create client
             const createdAt = new Date().toISOString()
             const clientToCreate = {
                 name,
                 email,
-                password,
+                password: newPassword,
                 logo: logoUrl,
                 createdAt,
             }
             const createdClient = await addDoc(collection(db, 'Clients'), clientToCreate)
             // Add id to createdClient
             clientToCreate.id = createdClient.id
+            clientToCreate.password = "????"
             // Return response
             res.json({ results: clientToCreate });
         } catch (error) {
@@ -170,7 +179,7 @@ class ClientController {
      *       500:
      *         description: An error occurred while updating the client.
      */
-    async updateClient (req, res, next) {
+    updateClient = async (req, res, next) => {
         const { name, email, password } = req.body;
         const { id } = req.params;
         const db = getFirestore(appFirebase);
@@ -183,7 +192,10 @@ class ClientController {
             // Update data if exits
             if (name) clientToUpdate.name = name;
             if (email) clientToUpdate.email = email;
-            if (password) clientToUpdate.password = password;
+            if (password) {
+                const newPassword = await this.hashPassword(password)
+                clientToUpdate.password = newPassword;
+            }
             if (req.file) {
                 // Get the actual logo path
                 const previousLogoUrl = client.logo
@@ -203,9 +215,9 @@ class ClientController {
             // Update client
             clientToUpdate.modifiedAt = new Date().toISOString()
             await updateDoc(clientRef, clientToUpdate);
+            clientToUpdate.password = "????"
             res.json({ results: { id, ...clientToUpdate } });
         } catch (error) {
-            console.log(error)
             res.status(404).json({ error: `The client '${req.params.id}' was not found.`})
         }
     }
