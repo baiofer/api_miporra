@@ -61,6 +61,9 @@ class ClubController {
      *           schema:
      *             type: object
      *             properties:
+     *               clientId:
+     *                 type: string
+     *                 description: The client that holds the club.
      *               match1HomeTeam:
      *                 type: string
      *                 description: The home team of the first match.
@@ -120,12 +123,13 @@ class ClubController {
      *         description: An error occurred while creating the club.
      */
     async createClub (req, res, next) {
-        const { match1HomeTeam, match1AwayTeam, match1Date, match1Hour, match2HomeTeam, match2AwayTeam, match2Date, match2hour, betPrice, accumulatedPrize, accumulatedJackpot, limitDateForBets, limitHourForBets, state, numberOfWinners } = req.body
+        const { clientId, match1HomeTeam, match1AwayTeam, match1Date, match1Hour, match2HomeTeam, match2AwayTeam, match2Date, match2hour, betPrice, accumulatedPrize, accumulatedJackpot, limitDateForBets, limitHourForBets, state, numberOfWinners } = req.body
         const db = getFirestore(appFirebase)
         try {
             // Create club
             const createdAt = new Date().toISOString()
             const clubToCreate = {
+                clientId,
                 match1HomeTeam, 
                 match1AwayTeam, 
                 match1Date, 
@@ -178,6 +182,9 @@ class ClubController {
      *           schema:
      *             type: object
      *             properties:
+     *               clientId:
+     *                 type: string
+     *                 description: The client that holds the club.
      *               match1HomeTeam:
      *                 type: string
      *                 description: The home team of the first match.
@@ -239,13 +246,14 @@ class ClubController {
      *         description: An error occurred while updating the club.
      */
     async updateClub (req, res, next) {
-        const { match1HomeTeam, match1AwayTeam, match1Date, match1Hour, match2HomeTeam, match2AwayTeam, match2Date, match2hour, betPrice, accumulatedPrize, accumulatedJackpot, limitDateForBets, limitHourForBets, state, numberOfWinners } = req.body
+        const { clientId, match1HomeTeam, match1AwayTeam, match1Date, match1Hour, match2HomeTeam, match2AwayTeam, match2Date, match2hour, betPrice, accumulatedPrize, accumulatedJackpot, limitDateForBets, limitHourForBets, state, numberOfWinners } = req.body
         const { id } = req.params;
         const db = getFirestore(appFirebase);
         try {
             const clubRef = doc(db, 'Clubs', id);
             const clubToUpdate = {};
             // Update data if exits
+            if (clientId) clubToUpdate.clientId = clientId;
             if (match1HomeTeam) clubToUpdate.match1HomeTeam = match1HomeTeam;
             if (match1AwayTeam) clubToUpdate.match1AwayTeam = match1AwayTeam;
             if (match1Date) clubToUpdate.match1Date = match1Date;
