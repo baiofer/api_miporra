@@ -104,8 +104,8 @@ class ClubController {
      *                 type: string
      *                 description: The limit hour for bets.
      *               state:
-     *                 type: string
-     *                 description: The state of the club.
+     *                 type: boolean
+     *                 description: The state of the club (inProgrss / finished).
      *               numberOfWinners:
      *                 type: number
      *                 description: The number of winners.
@@ -139,7 +139,8 @@ class ClubController {
                 accumulatedJackpot, 
                 limitDateForBets,
                 limitHourForBets, 
-                state, numberOfWinners,
+                state, 
+                numberOfWinners,
                 createdAt,
             }
             const createdClub = await addDoc(collection(db, 'Clubs'), clubToCreate)
@@ -220,8 +221,8 @@ class ClubController {
      *                 type: string
      *                 description: The limit hour for bets.
      *               state:
-     *                 type: string
-     *                 description: The state of the club.
+     *                 type: boolean
+     *                 description: The state of the club (inProgress / finished).
      *               numberOfWinners:
      *                 type: number
      *                 description: The number of winners.
