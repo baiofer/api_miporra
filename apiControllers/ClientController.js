@@ -203,7 +203,10 @@ class ClientController {
             const clientToUpdate = {};
             // Update data if exits
             if (name) clientToUpdate.name = name;
-            if (email) clientToUpdate.email = email;
+            if (email) {
+                res.status(403).json({ error: 'Modification of the email field is not allowed.' })
+                return
+            }
             if (password) {
                 const newPassword = await this.hashPassword(password)
                 clientToUpdate.password = newPassword;

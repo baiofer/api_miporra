@@ -1,9 +1,5 @@
 import { appFirebase } from "../app.js"
-import { getFirestore, collection, query, getDocs, where, addDoc, doc, updateDoc, getDoc, deleteDoc } from "firebase/firestore"
-import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage"
-import { unlink } from 'fs/promises'
-import fs from 'fs'
-import { resizeImage } from "../lib/resizeImage.js"
+import { getFirestore, collection, query, getDocs, where } from "firebase/firestore"
 import bcrypt from 'bcrypt'
 
 class LoginController {
