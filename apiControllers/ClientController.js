@@ -1,5 +1,5 @@
 import { appFirebase } from "../app.js"
-import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, getDoc, deleteDoc } from "firebase/firestore"
+import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, getDoc, deleteDoc, query, where } from "firebase/firestore"
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage"
 import { unlink } from 'fs/promises'
 import fs from 'fs'
@@ -110,6 +110,18 @@ class ClientController {
                 await unlink(`uploads/${req.file.filename}`);
             } 
             const newPassword = await this.hashPassword(password)
+            // Test if the email exists in BD
+            let client = ""
+            const clientsRef = collection(db, 'Clients')
+            const q = query(clientsRef, where("email", "==", email))
+            const querySnapshot = await getDocs(q)
+            querySnapshot.forEach((doc) => {
+                client = doc.data();
+            });
+            if (client.length !== 0) {
+                res.status(409).json({ error: 'A client with this email already exists.' })
+                return
+            }
             // Create client
             const createdAt = new Date().toISOString()
             const clientToCreate = {
