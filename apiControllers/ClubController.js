@@ -1,5 +1,5 @@
 import { appFirebase } from "../app.js"
-import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, getDoc, deleteDoc } from "firebase/firestore"
+import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, getDoc, deleteDoc, query, where } from "firebase/firestore"
 
 
 class ClubController {
@@ -15,6 +15,23 @@ class ClubController {
      *     tags: [Club]
      *     summary: Retrieve a list of clubs
      *     description: Retrieve a list of clubs from the Clubs collection. The list can be used to populate a club management dashboard.
+     *     parameters:
+     *       - in: query
+     *         name: id
+     *         description: ID to filter by. Using this parameter, overrides the others.
+     *         schema:
+     *           type: string 
+     *       - in: query
+     *         name: clientId
+     *         description: ClientId to filter by.
+     *         schema:
+     *           state: boolean
+     *       - in: query
+     *         name: state
+     *         description: State to filter by.
+     *         schema:
+     *           type: string
+     *           enum: [in progress, finished]  
      *     responses:
      *       200:
      *         description: A list of clubs was retrieved successfully.
@@ -28,15 +45,35 @@ class ClubController {
      *         description: An error occurred while retrieving the clubs.
      */
     async getClubs (req, res, next) {
+        const filterById = req.query.id
+        const filterByClientId = req.query.clientId
+        const filterByState = req.query.state
+        console.log(filterByState)
         const db = getFirestore(appFirebase)
         try {
             const listOfClubs = []
-            const clubs = await getDocs(collection(db, "Clubs"))
-            clubs.forEach( doc => {
-                const data = doc.data()
-                data.id = doc.id
-                listOfClubs.push(data)
-            })
+            // Filter by Id
+            if (filterById) {
+                const docRef = doc(db, 'Clubs', filterById);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    data.id = docSnap.id;
+                    listOfClubs.push(data);
+                }
+            // Filter by the rest of params
+            } else {
+                const clubsRef = collection(db, 'Clubs');
+                let q = query(clubsRef);
+                if (filterByClientId) q = query(q, where("clientId", "==", filterByClientId));
+                if (filterByState) q = query(q, where("state", "==", filterByState));
+                const clubs = await getDocs(q);
+                clubs.forEach(doc => {
+                    const data = doc.data();
+                    data.id = doc.id;
+                    listOfClubs.push(data);
+                })
+            }
             res.json({ results: listOfClubs })
         } catch (error) {
             next(error)
@@ -107,7 +144,8 @@ class ClubController {
      *                 type: string
      *                 description: The limit hour for bets.
      *               state:
-     *                 type: boolean
+     *                 type: string
+     *                 enum: [in progress, finished]
      *                 description: The state of the club (inProgrss / finished).
      *               numberOfWinners:
      *                 type: number

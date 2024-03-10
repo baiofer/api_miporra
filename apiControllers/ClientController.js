@@ -89,48 +89,47 @@ class ClientController {
         }
     }
 
-    /**
-     * @swagger
-     * tags:
-     *   name: Clients
-     *   description: Operations about clients
-     * 
-     * /v1.0/newClient:
-     *   post:
-     *     tags: [Clients]
-     *     summary: Create a new client
-     *     description: Create a new client and save it to the Clients collection. The client's logo 
-     * is uploaded to Firebase Storage and the download URL is saved to Firestore.
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         multipart/form-data:
-     *           schema:
-     *             type: object
-     *             properties:
-     *               name:
-     *                 type: string
-     *                 description: The name of the client.
-     *               email:
-     *                 type: string
-     *                 description: The email of the client.
-     *               logo:
-     *                 type: string
-     *                 format: binary
-     *                 description: The logo of the client.
-     *               password:
-     *                 type: string
-     *                 description: The password of the client. 
-     *     responses:
-     *       200:
-     *         description: The client was created successfully.
-     *         content:
-     *           application/json:
-     *             schema:
-     *               $ref: '#/components/schemas/Clients'
-     *       500:
-     *         description: An error occurred while creating the client.
-     */
+/**
+ * @swagger
+ * tags:
+ *   name: Clients
+ *   description: Operations about clients
+ * 
+ * /v1.0/newClient:
+ *   post:
+ *     tags: [Clients]
+ *     summary: Create a new client
+ *     description: Create a new client and save it to the Clients collection. The client's logo is uploaded to Firebase Storage and the download URL is saved to Firestore.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: The name of the client.
+ *               email:
+ *                 type: string
+ *                 description: The email of the client.
+ *               logo:
+ *                 type: string
+ *                 format: binary
+ *                 description: The logo of the client.
+ *               password:
+ *                 type: string
+ *                 description: The password of the client. 
+ *     responses:
+ *       200:
+ *         description: The client was created successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Clients'
+ *       500:
+ *         description: An error occurred while creating the client.
+ */
     createClient = async (req, res, next) => {
         const { name, email, password } = req.body
         const db = getFirestore(appFirebase)
@@ -179,54 +178,54 @@ class ClientController {
         }
     }
 
-    /**
-     * @swagger
-     * /v1.0/updateClient/{id}:
-     *   put:
-     *     tags: [Clients]
-     *     summary: Update a client
-     *     description: Update a client's details in the Clients collection.
-     *     parameters:
-     *       - in: path
-     *         name: id
-     *         required: true
-     *         description: The id of the client to update.
-     *         schema:
-     *           type: string
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         multipart/form-data:
-     *           schema:
-     *             type: object
-     *             properties:
-     *               name:
-     *                 type: string
-     *                 description: The name of the client.
-     *               email:
-     *                 type: string
-     *                 description: The email of the client.
-     *               logo:
-     *                 type: string
-     *                 format: binary
-     *                 description: The logo of the client.
-     *               password:
-     *                 type: string
-     *                 description: The password of the client.
-     *     responses:
-     *       200:
-     *         description: The client was updated successfully.
-     *         content:
-     *           application/json:
-     *             schema:
-     *               $ref: '#/components/schemas/Clients'
-     *       400:
-     *         description: The request was invalid.
-     *       404:
-     *         description: The client was not found.
-     *       500:
-     *         description: An error occurred while updating the client.
-     */
+/**
+ * @swagger
+ * /v1.0/updateClient/{id}:
+ *   put:
+ *     tags: [Clients]
+ *     summary: Update a client
+ *     description: Update a client's details in the Clients collection.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The id of the client to update.
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: The name of the client.
+ *               email:
+ *                 type: string
+ *                 description: The email of the client.
+ *               logo:
+ *                 type: string
+ *                 format: binary
+ *                 description: The logo of the client.
+ *               password:
+ *                 type: string
+ *                 description: The password of the client.
+ *     responses:
+ *       200:
+ *         description: The client was updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Clients'
+ *       400:
+ *         description: The request was invalid.
+ *       404:
+ *         description: The client was not found.
+ *       500:
+ *         description: An error occurred while updating the client.
+ */
     updateClient = async (req, res, next) => {
         const { name, email, password } = req.body;
         const { id } = req.params;
@@ -273,28 +272,28 @@ class ClientController {
         }
     }
 
-    /**
-     * @swagger
-     * /v1.0/deleteClient/{id}:
-     *   delete:
-     *     tags: [Clients]
-     *     summary: Delete a client
-     *     description: Delete a client from the Clients collection.
-     *     parameters:
-     *       - in: path
-     *         name: id
-     *         required: true
-     *         description: The id of the client to delete.
-     *         schema:
-     *           type: string
-     *     responses:
-     *       200:
-     *         description: The client was deleted successfully.
-     *       404:
-     *         description: The client was not found.
-     *       500:
-     *         description: An error occurred while deleting the client.
-     */
+/**
+ * @swagger
+ * /v1.0/deleteClient/{id}:
+ *   delete:
+ *     tags: [Clients]
+ *     summary: Delete a client
+ *     description: Delete a client from the Clients collection.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The id of the client to delete.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: The client was deleted successfully.
+ *       404:
+ *         description: The client was not found.
+ *       500:
+ *         description: An error occurred while deleting the client.
+ */
     async deleteClient (req, res, next) {
         const { id } = req.params;
         if (!id) {
