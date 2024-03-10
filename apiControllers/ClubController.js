@@ -25,7 +25,7 @@ class ClubController {
      *         name: clientId
      *         description: ClientId to filter by.
      *         schema:
-     *           state: boolean
+     *           type: string
      *       - in: query
      *         name: state
      *         description: State to filter by.
@@ -48,7 +48,6 @@ class ClubController {
         const filterById = req.query.id
         const filterByClientId = req.query.clientId
         const filterByState = req.query.state
-        console.log(filterByState)
         const db = getFirestore(appFirebase)
         try {
             const listOfClubs = []

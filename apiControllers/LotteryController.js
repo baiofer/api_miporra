@@ -1,5 +1,5 @@
 import { appFirebase } from "../app.js"
-import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, getDoc, deleteDoc } from "firebase/firestore"
+import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, getDoc, deleteDoc, query, where } from "firebase/firestore"
 
 
 class LotteryController {
@@ -15,6 +15,17 @@ class LotteryController {
      *     tags: [Lottery]
      *     summary: Retrieve a list of lotteries
      *     description: Retrieve a list of lotteries from the Lotteries collection. The list can be used to populate a lottery management dashboard.
+     *     parameters:
+     *       - in: query
+     *         name: id
+     *         description: ID to filter by. Using this parameter, overrides the others.
+     *         schema:
+     *           type: string 
+     *       - in: query
+     *         name: clientId
+     *         description: ClientId to filter by.
+     *         schema:
+     *           type: string
      *     responses:
      *       200:
      *         description: A list of lotteries was retrieved successfully.
@@ -28,15 +39,32 @@ class LotteryController {
      *         description: An error occurred while retrieving the lottery.
      */
     async getLotteries (req, res, next) {
+        const filterById = req.query.id
+        const filterByClientId = req.query.clientId
         const db = getFirestore(appFirebase)
         try {
             const listOfLotteries = []
-            const lotteries = await getDocs(collection(db, "Lotteries"))
-            lotteries.forEach( doc => {
-                const data = doc.data()
-                data.id = doc.id
-                listOfLotteries.push(data)
-            })
+            // Filter by Id
+            if (filterById) {
+                const docRef = doc(db, 'Lotteries', filterById);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    data.id = docSnap.id;
+                    listOfLotteries.push(data);
+                }
+            // Filter by the rest of params
+            } else {
+                const lotteriesRef = collection(db, 'Lotteries');
+                let q = query(lotteriesRef);
+                if (filterByClientId) q = query(q, where("clientId", "==", filterByClientId));
+                const lotteries = await getDocs(q);
+                lotteries.forEach(doc => {
+                    const data = doc.data();
+                    data.id = doc.id;
+                    listOfLotteries.push(data);
+                })
+            }
             res.json({ results: listOfLotteries })
         } catch (error) {
             next(error)
