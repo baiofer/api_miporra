@@ -1,5 +1,5 @@
 import { appFirebase } from "../app.js"
-import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, getDoc, deleteDoc } from "firebase/firestore"
+import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, getDoc, deleteDoc, query, where } from "firebase/firestore"
 
 
 class ClubBetController {
@@ -15,6 +15,22 @@ class ClubBetController {
      *     tags: [ClubBet]
      *     summary: Retrieve a list of club bets
      *     description: Retrieve a list of club bets from the ClubBets collection. The list can be used to populate a club bet management dashboard.
+     *     parameters:
+     *       - in: query
+     *         name: id
+     *         description: ID to filter by. Using this parameter, overrides the others.
+     *         schema:
+     *           type: string 
+     *       - in: query
+     *         name: clubId
+     *         description: ClubId to filter by.
+     *         schema:
+     *           type: string
+     *       - in: query
+     *         name: userEmail
+     *         description: UserEmail to filter by.
+     *         schema:
+     *           type: string 
      *     responses:
      *       200:
      *         description: A list of club bets was retrieved successfully.
@@ -28,15 +44,34 @@ class ClubBetController {
      *         description: An error occurred while retrieving the club bet.
      */
     async getClubBets (req, res, next) {
+        const filterById = req.query.id
+        const filterByClubId = req.query.clubId
+        const filterByUserEmail = req.query.userEmail
         const db = getFirestore(appFirebase)
         try {
             const listOfClubBets = []
-            const clubBets = await getDocs(collection(db, "ClubBets"))
-            clubBets.forEach( doc => {
-                const data = doc.data()
-                data.id = doc.id
-                listOfClubBets.push(data)
-            })
+            // Filter by Id
+            if (filterById) {
+                const docRef = doc(db, 'ClubBets', filterById);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    data.id = docSnap.id;
+                    listOfClubBets.push(data);
+                }
+            // Filter by the rest of params
+            } else {
+                const clubBetsRef = collection(db, 'ClubBets');
+                let q = query(clubBetsRef);
+                if (filterByClubId) q = query(q, where("clubId", "==", filterByClubId));
+                if (filterByUserEmail) q = query(q, where("userEmail", "==", filterByUserEmail));
+                const clubBets = await getDocs(q);
+                clubBets.forEach(doc => {
+                    const data = doc.data();
+                    data.id = doc.id;
+                    listOfClubBets.push(data);
+                })
+            }
             res.json({ results: listOfClubBets })
         } catch (error) {
             next(error)
