@@ -26,6 +26,22 @@ class ClientController {
  *     tags: [Clients]
  *     summary: Retrieve a list of clients
  *     description: Retrieve a list of clients from the Clients collection. The list can be used to populate a client management dashboard.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         description: ID to filter by. Using this parameter, overrides the others.
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: name
+ *         description: Name to filter by
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: email
+ *         description: Email to filter by
+ *         schema:
+ *           type: string  
  *     responses:
  *       200:
  *         description: A list of clients was retrieved successfully.
@@ -39,15 +55,34 @@ class ClientController {
  *         description: An error occurred while retrieving the clients.
  */
     async getClients (req, res, next) {
+        const filterByName = req.query.name
+        const filterByEmail = req.query.email
+        const filterById = req.query.id
         const db = getFirestore(appFirebase)
         try {
             const listOfClients = []
-            const clients = await getDocs(collection(db, "Clients"))
-            clients.forEach( doc => {
-                const data = doc.data()
-                data.id = doc.id
-                listOfClients.push(data)
-            })
+            // Filter by id
+            if (filterById) {
+                const docRef = doc(db, 'Clients', filterById);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    data.id = docSnap.id;
+                    listOfClients.push(data);
+                }
+            // Filter by the rest of params
+            } else {
+                const clientsRef = collection(db, 'Clients');
+                let q = query(clientsRef);
+                if (filterByEmail) q = query(q, where("email", "==", filterByEmail));
+                if (filterByName) q = query(q, where("name", "==", filterByName));
+                const clients = await getDocs(q);
+                clients.forEach(doc => {
+                    const data = doc.data();
+                    data.id = doc.id;
+                    listOfClients.push(data);
+                })
+            }
             res.json({ results: listOfClients })
         } catch (error) {
             next(error)
@@ -64,7 +99,8 @@ class ClientController {
      *   post:
      *     tags: [Clients]
      *     summary: Create a new client
-     *     description: Create a new client and save it to the Clients collection. The client's logo is uploaded to Firebase Storage and the download URL is saved to Firestore.
+     *     description: Create a new client and save it to the Clients collection. The client's logo 
+     * is uploaded to Firebase Storage and the download URL is saved to Firestore.
      *     requestBody:
      *       required: true
      *       content:
