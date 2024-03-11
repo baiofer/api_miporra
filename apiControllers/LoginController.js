@@ -1,6 +1,7 @@
 import { appFirebase } from "../app.js"
 import { getFirestore, collection, query, getDocs, where } from "firebase/firestore"
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
 class LoginController {
 
@@ -39,7 +40,14 @@ class LoginController {
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/Clients'
+     *               type: object
+     *               properties:
+     *                 token:
+     *                   type: string
+     *                   format: jwt
+     *                 expiresIn:
+     *                   type: integer
+     *                   description: Time in seconds until expiration
      *       401:
      *         description: Unauthorized. Invalid credentials
      *       500:
@@ -47,7 +55,6 @@ class LoginController {
      */
     login = async (req, res, next) => {
         const { email, password } = req.body
-        console.log(email, password)
         const db = getFirestore(appFirebase)
         try {
             let client = ""
@@ -61,6 +68,31 @@ class LoginController {
                 res.status(401).json({ error: 'Invalid credentials.' })
             } else {
                 res.json({ results: "OK" })
+            }
+        } catch (error) {
+            console.log(error)
+            next(error)
+        }
+    }
+
+    jwtLogin = async (req, res, next) => {
+        const { email, password } = req.body
+        const db = getFirestore(appFirebase)
+        try {
+            let client = ""
+            const clientsRef = collection(db, 'Clients')
+            const q = query(clientsRef, where("email", "==", email))
+            const querySnapshot = await getDocs(q)
+            querySnapshot.forEach((doc) => {
+                client = doc.data();
+            });
+            if (client.length === 0 || !await this.comparePassword(password, client.password)) {
+                res.status(401).json({ error: 'Invalid credentials.' })
+            } else {
+                const tokenJWT = await jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+                    expiresIn: '2d'
+                })
+                res.json({ jwt: tokenJWT})
             }
         } catch (error) {
             console.log(error)
