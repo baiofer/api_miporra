@@ -41,6 +41,7 @@ class ClientController {
  *         description: An error occurred while retrieving the clients.
  */
     async getClients (req, res, next) {
+        // The clientId comes in req.userLoggedApi
         const filterByName = req.query.name
         const filterByEmail = req.query.email
         //const filterById = req.query.id
@@ -172,13 +173,6 @@ class ClientController {
  *     tags: [Clients]
  *     summary: Update a client
  *     description: Update the client details in the JWT.
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: The id of the client to update.
- *         schema:
- *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -217,7 +211,8 @@ class ClientController {
  */
     updateClient = async (req, res, next) => {
         const { name, email, password } = req.body;
-        const { id } = req.params;
+        // The clientId comes in req.userLoggedApi
+        const id = req.userLoggedApi;
         const db = getFirestore(appFirebase);
         const storage = getStorage();
         try {
@@ -268,13 +263,6 @@ class ClientController {
  *     tags: [Clients]
  *     summary: Delete a client
  *     description: Delete the client given in the JWT.
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: The id of the client to delete.
- *         schema:
- *           type: string
  *     security:
  *       - JWTAuth: []
  *     responses:
@@ -286,10 +274,8 @@ class ClientController {
  *         description: An error occurred while deleting the client.
  */
     async deleteClient (req, res, next) {
-        const { id } = req.params;
-        if (!id) {
-            throw new Error(`Not client delivery.`);
-        }
+        // The clientId comes in req.userLoggedApi
+        const id = req.userLoggedApi;
         const db = getFirestore(appFirebase);
         const storage = getStorage();
         try {

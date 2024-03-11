@@ -49,8 +49,8 @@ const loginController = new LoginController
 // Clients
 app.use('/v1.0/clients', jwtAuthMiddleware, clientController.getClients);
 app.use('/v1.0/newClient', upload.single('logo'), clientController.createClient);
-app.use('/v1.0/deleteClient/:id', jwtAuthMiddleware, clientController.deleteClient);
-app.use('/v1.0/updateClient/:id', jwtAuthMiddleware, upload.single('logo'), clientController.updateClient);
+app.use('/v1.0/deleteClient', jwtAuthMiddleware, clientController.deleteClient);
+app.use('/v1.0/updateClient', jwtAuthMiddleware, upload.single('logo'), clientController.updateClient);
 
 // Clubs
 app.use('/v1.0/clubs', clubController.getClubs);
