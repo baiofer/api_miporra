@@ -19,7 +19,7 @@ class LoginController {
      * /v1.0/login:
      *   post:
      *     tags: [Clients]
-     *     summary: Create a new client
+     *     summary: Login a client
      *     description: Create a new client and save it to the Clients collection. The client's logo is uploaded to Firebase Storage and the download URL is saved to Firestore.
      *     requestBody:
      *       required: true

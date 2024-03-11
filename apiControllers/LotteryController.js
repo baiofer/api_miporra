@@ -14,7 +14,7 @@ class LotteryController {
      *   get:
      *     tags: [Lottery]
      *     summary: Retrieve a list of lotteries
-     *     description: Retrieve a list of lotteries from the Lotteries collection. The list can be used to populate a lottery management dashboard.
+     *     description: Retrieve a list of lotteries from the Lotteries collection.
      *     parameters:
      *       - in: query
      *         name: id
@@ -71,6 +71,74 @@ class LotteryController {
         }
     }
 
+
+    /**
+     * @swagger
+     * tags:
+     *   name: Lottery
+     *   description: Operations about Lotteries
+     * 
+     * /v1.0/lotteries:
+     *   get:
+     *     tags: [Lottery]
+     *     summary: Retrieve the list of lotteries of the JWT owner.
+     *     description: Retrieve the list of lotteries of the JWT owner.
+     *     parameters:
+     *       - in: query
+     *         name: id
+     *         description: ID to filter by. Using this parameter, overrides the others.
+     *         schema:
+     *           type: string 
+     *       - in: query
+     *         name: clientId
+     *         description: ClientId to filter by.
+     *         schema:
+     *           type: string
+     *     responses:
+     *       200:
+     *         description: A list of lotteries was retrieved successfully.
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: array
+     *               items:
+     *                 $ref: '#/components/schemas/Lottery'
+     *       500:
+     *         description: An error occurred while retrieving the lottery.
+     */
+    async getLotteriesJwt (req, res, next) {
+        const filterById = req.query.id
+        const filterByClientId = req.userLoggedApi
+        const db = getFirestore(appFirebase)
+        try {
+            const listOfLotteries = []
+            // Filter by Id
+            if (filterById) {
+                const docRef = doc(db, 'Lotteries', filterById);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    data.id = docSnap.id;
+                    listOfLotteries.push(data);
+                }
+            // Filter by the rest of params
+            } else {
+                const lotteriesRef = collection(db, 'Lotteries');
+                let q = query(lotteriesRef);
+                if (filterByClientId) q = query(q, where("clientId", "==", filterByClientId));
+                const lotteries = await getDocs(q);
+                lotteries.forEach(doc => {
+                    const data = doc.data();
+                    data.id = doc.id;
+                    listOfLotteries.push(data);
+                })
+            }
+            res.json({ results: listOfLotteries })
+        } catch (error) {
+            next(error)
+        }
+    }
+
     /**
      * @swagger
      * tags:
@@ -80,7 +148,7 @@ class LotteryController {
      * /v1.0/newLottery:
      *   post:
      *     tags: [Lottery]
-     *     summary: Create a new lottery
+     *     summary: Create a new lottery. Requires JWT
      *     description: Create a new lottery and save it to the Lotteries collection.
      *     requestBody:
      *       required: true
@@ -89,9 +157,6 @@ class LotteryController {
      *           schema:
      *             type: object
      *             properties:
-     *               clientId:
-     *                 type: string
-     *                 description: The client that create the lottery.
      *               firstNumber:
      *                 type: number
      *                 description: The first number of the lottery.
@@ -115,6 +180,8 @@ class LotteryController {
      *               lotteryPrize:
      *                 type: string
      *                 description: The prize for the winner.
+     *     security:
+     *       - JWTAuth: []
      *     responses:
      *       200:
      *         description: The lottery was created successfully.
@@ -126,7 +193,8 @@ class LotteryController {
      *         description: An error occurred while creating the lottery.
      */
     async createLottery (req, res, next) {
-        const { clientId, firstNumber, totalNumbers, dateOfLottery, dateLimitOfBets, betPrice, howToWin, lotteryPrize } = req.body
+        const { firstNumber, totalNumbers, dateOfLottery, dateLimitOfBets, betPrice, howToWin, lotteryPrize } = req.body
+        const clientId = req.userLoggedApi
         const db = getFirestore(appFirebase)
         try {
             // Create club
@@ -161,7 +229,7 @@ class LotteryController {
      * /v1.0/updateLottery/{id}:
      *   put:
      *     tags: [Lottery]
-     *     summary: Update an existing lottery
+     *     summary: Update an existing lottery. Requites JWT
      *     description: Update an existing lottery and save it to the Lotteries collection.
      *     parameters:
      *       - in: path
@@ -177,9 +245,6 @@ class LotteryController {
      *           schema:
      *             type: object
      *             properties:
-     *               clientId:
-     *                 type: string
-     *                 description: The client that create the lottery.
      *               firstNumber:
      *                 type: number
      *                 description: The first number of the lottery.
@@ -203,6 +268,8 @@ class LotteryController {
      *               lotteryPrize:
      *                 type: string
      *                 description: The prize for the winner.
+     *     security:
+     *       - JWTAuth: []
      *     responses:
      *       200:
      *         description: The lottery was updated successfully.
@@ -216,7 +283,8 @@ class LotteryController {
      *         description: An error occurred while updating the lottery.
      */
     async updateLottery (req, res, next) {
-        const { clientId, firstNumber, totalNumbers, dateOfLottery, dateLimitOfBets, betPrice, howToWin, lotteryPrize } = req.body
+        const { firstNumber, totalNumbers, dateOfLottery, dateLimitOfBets, betPrice, howToWin, lotteryPrize } = req.body
+        const clientId = req.userLoggedApi
         const { id } = req.params;
         const db = getFirestore(appFirebase);
         try {
@@ -253,6 +321,8 @@ class LotteryController {
      *         description: The id of the lottery to delete.
      *         schema:
      *           type: string
+     *     security:
+     *       - JWTAuth: []
      *     responses:
      *       200:
      *         description: The lottery was deleted successfully.

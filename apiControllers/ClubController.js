@@ -4,7 +4,7 @@ import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, getDoc, dele
 
 class ClubController {
 
-    /**
+        /**
      * @swagger
      * tags:
      *   name: Club
@@ -14,18 +14,13 @@ class ClubController {
      *   get:
      *     tags: [Club]
      *     summary: Retrieve a list of clubs
-     *     description: Retrieve a list of clubs from the Clubs collection. The list can be used to populate a club management dashboard.
+     *     description: Retrieve a list of clubs from the Clubs collection. The list containts all the clubs.
      *     parameters:
      *       - in: query
      *         name: id
      *         description: ID to filter by. Using this parameter, overrides the others.
      *         schema:
      *           type: string 
-     *       - in: query
-     *         name: clientId
-     *         description: ClientId to filter by.
-     *         schema:
-     *           type: string
      *       - in: query
      *         name: state
      *         description: State to filter by.
@@ -44,9 +39,85 @@ class ClubController {
      *       500:
      *         description: An error occurred while retrieving the clubs.
      */
-    async getClubs (req, res, next) {
+        async getClubs (req, res, next) {
+            const filterById = req.query.id
+            const filterByState = req.query.state
+            const db = getFirestore(appFirebase)
+            try {
+                const listOfClubs = []
+                // Filter by Id
+                if (filterById) {
+                    const docRef = doc(db, 'Clubs', filterById);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        data.id = docSnap.id;
+                        listOfClubs.push(data);
+                    }
+                // Filter by the rest of params
+                } else {
+                    const clubsRef = collection(db, 'Clubs');
+                    let q = query(clubsRef);
+                    if (filterByState) q = query(q, where("state", "==", filterByState));
+                    const clubs = await getDocs(q);
+                    clubs.forEach(doc => {
+                        const data = doc.data();
+                        data.id = doc.id;
+                        listOfClubs.push(data);
+                    })
+                }
+                res.json({ results: listOfClubs })
+            } catch (error) {
+                console.log(error)
+                next(error)
+            }
+        }
+
+
+    /**
+     * @swagger
+     * tags:
+     *   name: Club
+     *   description: Operations about clubs
+     * 
+     * /v1.0/clubsJwt:
+     *   get:
+     *     tags: [Club]
+     *     summary: Retrieve the list of clubs of the jwt owner.
+     *     description: Retrieve a list of clubs from the Clubs collection. The list contains the clubs edited by the owner of the JWT.
+     *     parameters:
+     *       - in: query
+     *         name: id
+     *         description: ID to filter by. Using this parameter, overrides the others.
+     *         schema:
+     *           type: string 
+     *       - in: query
+     *         name: state
+     *         description: State to filter by.
+     *         schema:
+     *           type: string
+     *           enum: [in progress, finished]
+     *     security:
+     *       - JWTAuth: []  
+     *     responses:
+     *       200:
+     *         description: A list of clubs was retrieved successfully.
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: array
+     *               items:
+     *                 $ref: '#/components/schemas/Club'
+     *       500:
+     *         description: An error occurred while retrieving the clubs.
+     */
+    async getClubsJWT (req, res, next) {
+        console.log('GET CLUBS')
         const filterById = req.query.id
-        const filterByClientId = req.query.clientId
+        // The clientId comes in req.userLoggedApi
+        const filterByClientId = req.userLoggedApi
+        console.log(req.userLoggedApi)
+        console.log(filterByClientId)
         const filterByState = req.query.state
         const db = getFirestore(appFirebase)
         try {
@@ -75,6 +146,7 @@ class ClubController {
             }
             res.json({ results: listOfClubs })
         } catch (error) {
+            console.log(error)
             next(error)
         }
     }
@@ -97,9 +169,6 @@ class ClubController {
      *           schema:
      *             type: object
      *             properties:
-     *               clientId:
-     *                 type: string
-     *                 description: The client that holds the club.
      *               match1HomeTeam:
      *                 type: string
      *                 description: The home team of the first match.
@@ -149,6 +218,8 @@ class ClubController {
      *               numberOfWinners:
      *                 type: number
      *                 description: The number of winners.
+     *     security:
+     *       - JWTAuth: []
      *     responses:
      *       200:
      *         description: The club was created successfully.
@@ -160,7 +231,9 @@ class ClubController {
      *         description: An error occurred while creating the club.
      */
     async createClub (req, res, next) {
-        const { clientId, match1HomeTeam, match1AwayTeam, match1Date, match1Hour, match2HomeTeam, match2AwayTeam, match2Date, match2hour, betPrice, accumulatedPrize, accumulatedJackpot, limitDateForBets, limitHourForBets, state, numberOfWinners } = req.body
+        const { match1HomeTeam, match1AwayTeam, match1Date, match1Hour, match2HomeTeam, match2AwayTeam, match2Date, match2hour, betPrice, accumulatedPrize, accumulatedJackpot, limitDateForBets, limitHourForBets, state, numberOfWinners } = req.body
+        // The clientId comes in req.userLoggedApi
+        const clientId = req.userLoggedApi
         const db = getFirestore(appFirebase)
         try {
             // Create club
@@ -219,9 +292,6 @@ class ClubController {
      *           schema:
      *             type: object
      *             properties:
-     *               clientId:
-     *                 type: string
-     *                 description: The client that holds the club.
      *               match1HomeTeam:
      *                 type: string
      *                 description: The home team of the first match.
@@ -270,6 +340,8 @@ class ClubController {
      *               numberOfWinners:
      *                 type: number
      *                 description: The number of winners.
+     *     security:
+     *       - JWTAuth: []
      *     responses:
      *       200:
      *         description: The club was updated successfully.
@@ -283,8 +355,10 @@ class ClubController {
      *         description: An error occurred while updating the club.
      */
     async updateClub (req, res, next) {
-        const { clientId, match1HomeTeam, match1AwayTeam, match1Date, match1Hour, match2HomeTeam, match2AwayTeam, match2Date, match2hour, betPrice, accumulatedPrize, accumulatedJackpot, limitDateForBets, limitHourForBets, state, numberOfWinners } = req.body
+        const { match1HomeTeam, match1AwayTeam, match1Date, match1Hour, match2HomeTeam, match2AwayTeam, match2Date, match2hour, betPrice, accumulatedPrize, accumulatedJackpot, limitDateForBets, limitHourForBets, state, numberOfWinners } = req.body
         const { id } = req.params;
+        // The clientId comes in req.userLoggedApi
+        const clientId = req.userLoggedApi
         const db = getFirestore(appFirebase);
         try {
             const clubRef = doc(db, 'Clubs', id);
