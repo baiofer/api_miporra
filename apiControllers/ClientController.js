@@ -24,24 +24,10 @@ class ClientController {
  * /v1.0/clients:
  *   get:
  *     tags: [Clients]
- *     summary: Retrieve a list of clients
- *     description: Retrieve a list of clients from the Clients collection. The list can be used to populate a client management dashboard.
- *     parameters:
- *       - in: query
- *         name: id
- *         description: ID to filter by. Using this parameter, overrides the others.
- *         schema:
- *           type: string
- *       - in: query
- *         name: name
- *         description: Name to filter by
- *         schema:
- *           type: string
- *       - in: query
- *         name: email
- *         description: Email to filter by
- *         schema:
- *           type: string  
+ *     summary: Require jwt. Give the client in the token
+ *     description: Retrieve the client introduced in the jwt from the Clients collection.
+ *     security:
+ *       - JWTAuth: [] 
  *     responses:
  *       200:
  *         description: A list of clients was retrieved successfully.
@@ -57,7 +43,8 @@ class ClientController {
     async getClients (req, res, next) {
         const filterByName = req.query.name
         const filterByEmail = req.query.email
-        const filterById = req.query.id
+        //const filterById = req.query.id
+        const filterById = req.userLoggedApi
         const db = getFirestore(appFirebase)
         try {
             const listOfClients = []
@@ -99,7 +86,7 @@ class ClientController {
  *   post:
  *     tags: [Clients]
  *     summary: Create a new client
- *     description: Create a new client and save it to the Clients collection. The client's logo is uploaded to Firebase Storage and the download URL is saved to Firestore.
+ *     description: Create a new client and save it to the Clients collection. The client's logo is uploaded to Firebase Storage and the download URL is saved to Firestore. Not jwt required.
  *     requestBody:
  *       required: true
  *       content:
@@ -184,7 +171,7 @@ class ClientController {
  *   put:
  *     tags: [Clients]
  *     summary: Update a client
- *     description: Update a client's details in the Clients collection.
+ *     description: Update the client details in the JWT.
  *     parameters:
  *       - in: path
  *         name: id
@@ -212,6 +199,8 @@ class ClientController {
  *               password:
  *                 type: string
  *                 description: The password of the client.
+ *     security:
+ *       - JWTAuth: []
  *     responses:
  *       200:
  *         description: The client was updated successfully.
@@ -278,7 +267,7 @@ class ClientController {
  *   delete:
  *     tags: [Clients]
  *     summary: Delete a client
- *     description: Delete a client from the Clients collection.
+ *     description: Delete the client given in the JWT.
  *     parameters:
  *       - in: path
  *         name: id
@@ -286,6 +275,8 @@ class ClientController {
  *         description: The id of the client to delete.
  *         schema:
  *           type: string
+ *     security:
+ *       - JWTAuth: []
  *     responses:
  *       200:
  *         description: The client was deleted successfully.
