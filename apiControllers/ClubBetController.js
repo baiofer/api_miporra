@@ -31,6 +31,8 @@ class ClubBetController {
      *         description: UserEmail to filter by.
      *         schema:
      *           type: string 
+     *     security:
+     *       - JWTAuth: []
      *     responses:
      *       200:
      *         description: A list of club bets was retrieved successfully.
@@ -44,6 +46,7 @@ class ClubBetController {
      *         description: An error occurred while retrieving the club bet.
      */
     async getClubBets (req, res, next) {
+        console.log('GetClubBets')
         const filterById = req.query.id
         const filterByClubId = req.query.clubId
         const filterByUserEmail = req.query.userEmail

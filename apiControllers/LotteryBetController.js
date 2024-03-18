@@ -31,6 +31,8 @@ class LotteryBetController {
      *         description: UserEmail to filter by.
      *         schema:
      *           type: string 
+     *     security:
+     *       - JWTAuth: []
      *     responses:
      *       200:
      *         description: A list of lottery bets was retrieved successfully.
