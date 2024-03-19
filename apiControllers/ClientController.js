@@ -15,6 +15,69 @@ class ClientController {
         return bcrypt.hash(plainPassword, 7)
     }
 
+    /**
+ * @swagger
+ * tags:
+ *   name: Clients
+ *   description: Operations about clients
+ * 
+ * /v1.0/clientsJwt:
+ *   get:
+ *     tags: [Clients]
+ *     summary: Require jwt. Give the client in the token
+ *     description: Retrieve the client introduced in the jwt from the Clients collection.
+ *     security:
+ *       - JWTAuth: [] 
+ *     responses:
+ *       200:
+ *         description: A list of clients was retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Clients'
+ *       500:
+ *         description: An error occurred while retrieving the clients.
+ */
+    async getClientsJwt (req, res, next) {
+        // The clientId comes in req.userLoggedApi
+        const filterByName = req.query.name
+        const filterByEmail = req.query.email
+        //const filterById = req.query.id
+        const filterById = req.userLoggedApi
+        const db = getFirestore(appFirebase)
+        try {
+            const listOfClients = []
+            // Filter by id
+            if (filterById) {
+                const docRef = doc(db, 'Clients', filterById);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    data.id = docSnap.id;
+                    listOfClients.push(data);
+                }
+            // Filter by the rest of params
+            } else {
+                const clientsRef = collection(db, 'Clients');
+                let q = query(clientsRef);
+                if (filterByEmail) q = query(q, where("email", "==", filterByEmail));
+                if (filterByName) q = query(q, where("name", "==", filterByName));
+                const clients = await getDocs(q);
+                clients.forEach(doc => {
+                    const data = doc.data();
+                    data.id = doc.id;
+                    listOfClients.push(data);
+                })
+            }
+            res.json({ results: listOfClients })
+        } catch (error) {
+            next(error)
+        }
+    }
+
+
 /**
  * @swagger
  * tags:
@@ -25,9 +88,7 @@ class ClientController {
  *   get:
  *     tags: [Clients]
  *     summary: Require jwt. Give the client in the token
- *     description: Retrieve the client introduced in the jwt from the Clients collection.
- *     security:
- *       - JWTAuth: [] 
+ *     description: Retrieve the client introduced in the jwt from the Clients collection. 
  *     responses:
  *       200:
  *         description: A list of clients was retrieved successfully.

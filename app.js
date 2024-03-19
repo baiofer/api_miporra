@@ -47,7 +47,8 @@ const lotteryBetController = new LotteryBetController
 const loginController = new LoginController
 
 // Clients
-app.use('/v1.0/clients', jwtAuthMiddleware, clientController.getClients);
+app.use('/v1.0/clients', clientController.getClients);
+app.use('/v1.0/clientsjwt', jwtAuthMiddleware, clientController.getClients);
 app.use('/v1.0/newClient', upload.single('logo'), clientController.createClient);
 app.use('/v1.0/deleteClient', jwtAuthMiddleware, clientController.deleteClient);
 app.use('/v1.0/updateClient', jwtAuthMiddleware, upload.single('logo'), clientController.updateClient);

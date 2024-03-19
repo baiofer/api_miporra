@@ -78,7 +78,7 @@ class LotteryController {
      *   name: Lottery
      *   description: Operations about Lotteries
      * 
-     * /v1.0/lotteries:
+     * /v1.0/lotteriesJwt:
      *   get:
      *     tags: [Lottery]
      *     summary: Retrieve the list of lotteries of the JWT owner.
@@ -94,6 +94,8 @@ class LotteryController {
      *         description: ClientId to filter by.
      *         schema:
      *           type: string
+     *     security:
+     *       - JWTAuth: []
      *     responses:
      *       200:
      *         description: A list of lotteries was retrieved successfully.

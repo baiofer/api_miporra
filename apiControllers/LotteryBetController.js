@@ -7,7 +7,7 @@ class LotteryBetController {
     /**
      * @swagger
      * tags:
-     *   name: LotteryBet
+     *   name: LotteryBetJwt
      *   description: Operations about Lottery bets
      * 
      * /v1.0/lotteryBets:
@@ -33,6 +33,79 @@ class LotteryBetController {
      *           type: string 
      *     security:
      *       - JWTAuth: []
+     *     responses:
+     *       200:
+     *         description: A list of lottery bets was retrieved successfully.
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: array
+     *               items:
+     *                 $ref: '#/components/schemas/LotteryBet'
+     *       500:
+     *         description: An error occurred while retrieving the lottery bet.
+     */
+    async getLotteryBetsJwt (req, res, next) {
+        const filterById = req.query.id
+        const filterByLotteryId = req.query.lotteryId
+        const filterByUserEmail = req.query.userEmail
+        const db = getFirestore(appFirebase)
+        try {
+            const listOfLotteryBets = []
+            // Filter by Id
+            if (filterById) {
+                const docRef = doc(db, 'LotteryBets', filterById);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    data.id = docSnap.id;
+                    listOfLotteryBets.push(data);
+                }
+            // Filter by the rest of params
+            } else {
+                const lotteryBetsRef = collection(db, 'LotteryBets');
+                let q = query(lotteryBetsRef);
+                if (filterByLotteryId) q = query(q, where("clubId", "==", filterByLotteryId));
+                if (filterByUserEmail) q = query(q, where("userEmail", "==", filterByUserEmail));
+                const lotteryBets = await getDocs(q);
+                lotteryBets.forEach(doc => {
+                    const data = doc.data();
+                    data.id = doc.id;
+                    listOfLotteryBets.push(data);
+                })
+            }
+            res.json({ results: listOfLotteryBets })
+        } catch (error) {
+            next(error)
+        }
+    }
+    /**
+     * @swagger
+     * tags:
+     *   name: LotteryBet
+     *   description: Operations about Lottery bets
+     * 
+     * /v1.0/lotteryBets:
+     *   get:
+     *     tags: [LotteryBet]
+     *     summary: Retrieve a list of lottery bets
+     *     description: Retrieve a list of lottery bets from the LotteryBets collection. The list can be used to populate a lottery bet management dashboard.
+     *     parameters:
+     *       - in: query
+     *         name: id
+     *         description: ID to filter by. Using this parameter, overrides the others.
+     *         schema:
+     *           type: string 
+     *       - in: query
+     *         name: LotteryId
+     *         description: LotteryId to filter by.
+     *         schema:
+     *           type: string
+     *       - in: query
+     *         name: userEmail
+     *         description: UserEmail to filter by.
+     *         schema:
+     *           type: string 
      *     responses:
      *       200:
      *         description: A list of lottery bets was retrieved successfully.
