@@ -48,7 +48,7 @@ const loginController = new LoginController
 
 // Clients
 app.use('/v1.0/clients', clientController.getClients);
-app.use('/v1.0/clientsjwt', jwtAuthMiddleware, clientController.getClients);
+app.use('/v1.0/clientsjwt', jwtAuthMiddleware, clientController.getClientsJwt);
 app.use('/v1.0/newClient', upload.single('logo'), clientController.createClient);
 app.use('/v1.0/deleteClient', jwtAuthMiddleware, clientController.deleteClient);
 app.use('/v1.0/updateClient', jwtAuthMiddleware, upload.single('logo'), clientController.updateClient);
@@ -63,19 +63,21 @@ app.use('/v1.0/deleteClub/:id', jwtAuthMiddleware, clubController.deleteClub);
 
 // Lotteries
 app.use('/v1.0/lotteries', lotteryController.getLotteries);
-app.use('/v1.0/lotteriesJwt', jwtAuthMiddleware, lotteryController.getLotteries);
+app.use('/v1.0/lotteriesJwt', jwtAuthMiddleware, lotteryController.getLotteriesJwt);
 app.use('/v1.0/newLottery', jwtAuthMiddleware, lotteryController.createLottery);
 app.use('/v1.0/deleteLottery/:id', jwtAuthMiddleware, lotteryController.deleteLottery);
 app.use('/v1.0/updateLottery/:id', jwtAuthMiddleware, lotteryController.updateLottery);
 
 // Club bets
-app.use('/v1.0/clubBets', jwtAuthMiddleware, clubBetController.getClubBets);
+app.use('/v1.0/clubBets', clubBetController.getClubBets);
+app.use('/v1.0/clubBetsJwt', jwtAuthMiddleware, clubBetController.getClubBetsJwt);
 app.use('/v1.0/newClubBet', jwtAuthMiddleware, clubBetController.createClubBet);
 app.use('/v1.0/deleteClubBet/:id', jwtAuthMiddleware, clubBetController.deleteClubBet);
 app.use('/v1.0/updateClubBet/:id', jwtAuthMiddleware, clubBetController.updateClubBet);
 
 // Lottery bets
-app.use('/v1.0/lotteryBets', jwtAuthMiddleware, lotteryBetController.getLotteryBets);
+app.use('/v1.0/lotteryBets', lotteryBetController.getLotteryBets);
+app.use('/v1.0/lotteryBetsJwt', jwtAuthMiddleware, lotteryBetController.getLotteryBetsJwt);
 app.use('/v1.0/newLotteryBet', jwtAuthMiddleware, lotteryBetController.createLotteryBet);
 app.use('/v1.0/deleteLotteryBet/:id', jwtAuthMiddleware, lotteryBetController.deleteLotteryBet);
 app.use('/v1.0/updateLotteryBet/:id', jwtAuthMiddleware, lotteryBetController.updateLotteryBet);

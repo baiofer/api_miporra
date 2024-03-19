@@ -7,7 +7,7 @@ class LotteryBetController {
     /**
      * @swagger
      * tags:
-     *   name: LotteryBetJwt
+     *   name: LotteryBetsJwt
      *   description: Operations about Lottery bets
      * 
      * /v1.0/lotteryBets:
@@ -82,7 +82,7 @@ class LotteryBetController {
     /**
      * @swagger
      * tags:
-     *   name: LotteryBet
+     *   name: LotteryBets
      *   description: Operations about Lottery bets
      * 
      * /v1.0/lotteryBets:
