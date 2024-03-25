@@ -7,10 +7,10 @@ class LotteryBetController {
     /**
      * @swagger
      * tags:
-     *   name: LotteryBetsJwt
+     *   name: LotteryBets
      *   description: Operations about Lottery bets
      * 
-     * /v1.0/lotteryBets:
+     * /v1.0/lotteryBetsJwt:
      *   get:
      *     tags: [LotteryBet]
      *     summary: Retrieve a list of lottery bets

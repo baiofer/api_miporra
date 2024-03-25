@@ -10,7 +10,7 @@ class ClubBetController {
      *   name: ClubBet
      *   description: Operations about club bets
      * 
-     * /v1.0/clubBets:
+     * /v1.0/clubBetsJwt:
      *   get:
      *     tags: [ClubBet]
      *     summary: Retrieve a list of club bets
