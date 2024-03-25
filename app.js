@@ -37,6 +37,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 swaggerMiddleware(app)
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
 
 // API routes
 const clubController = new ClubController
@@ -48,7 +52,7 @@ const loginController = new LoginController
 
 // Clients
 app.use('/v1.0/clients', clientController.getClients);
-app.use('/v1.0/clientsjwt', jwtAuthMiddleware, clientController.getClientsJwt);
+app.use('/v1.0/clientsJwt', jwtAuthMiddleware, clientController.getClientsJwt);
 app.use('/v1.0/newClient', upload.single('logo'), clientController.createClient);
 app.use('/v1.0/deleteClient', jwtAuthMiddleware, clientController.deleteClient);
 app.use('/v1.0/updateClient', jwtAuthMiddleware, upload.single('logo'), clientController.updateClient);
