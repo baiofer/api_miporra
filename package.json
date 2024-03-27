@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "cross-env DEBUG=nodeapp:* nodemon ./bin/www"
+    "dev": "cross-env DEBUG=nodeapp:* nodemon ./bin/www",
+    "initDB": "node ./initDB/initDB.js"
   },
   "type": "module",
   "dependencies": {
