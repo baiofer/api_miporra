@@ -5,17 +5,18 @@ import { unlink } from 'fs/promises'
 import fs from 'fs'
 import { resizeImage } from "../lib/resizeImage.js"
 import bcrypt from 'bcrypt'
+import { deleteClubs } from "../lib/firebaseFunctions.js"
+
 
 
 class ClientController {
 
     // Function to hash a password
     hashPassword = (plainPassword) => {
-        console.log(plainPassword)
         return bcrypt.hash(plainPassword, 7)
     }
 
-    /**
+/**
  * @swagger
  * tags:
  *   name: Clients
@@ -24,7 +25,7 @@ class ClientController {
  * /v1.0/clientsJwt:
  *   get:
  *     tags: [Clients]
- *     summary: Require jwt. Give the client in the token
+ *     summary: Require jwt. Give the client data in the token
  *     description: Retrieve the client introduced in the jwt from the Clients collection.
  *     security:
  *       - JWTAuth: [] 
@@ -41,35 +42,16 @@ class ClientController {
  *         description: An error occurred while retrieving the clients.
  */
     async getClientsJwt (req, res, next) {
-        // The clientId comes in req.userLoggedApi
-        const filterByName = req.query.name
-        const filterByEmail = req.query.email
-        //const filterById = req.query.id
         const filterById = req.userLoggedApi
         const db = getFirestore(appFirebase)
         try {
             const listOfClients = []
-            // Filter by id
-            if (filterById) {
-                const docRef = doc(db, 'Clients', filterById);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    data.id = docSnap.id;
-                    listOfClients.push(data);
-                }
-            // Filter by the rest of params
-            } else {
-                const clientsRef = collection(db, 'Clients');
-                let q = query(clientsRef);
-                if (filterByEmail) q = query(q, where("email", "==", filterByEmail));
-                if (filterByName) q = query(q, where("name", "==", filterByName));
-                const clients = await getDocs(q);
-                clients.forEach(doc => {
-                    const data = doc.data();
-                    data.id = doc.id;
-                    listOfClients.push(data);
-                })
+            const docRef = doc(db, 'Clients', filterById);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                data.id = docSnap.id;
+                listOfClients.push(data);
             }
             res.json({ results: listOfClients })
         } catch (error) {
@@ -87,8 +69,24 @@ class ClientController {
  * /v1.0/clients:
  *   get:
  *     tags: [Clients]
- *     summary: Require jwt. Give the client in the token
- *     description: Retrieve the client introduced in the jwt from the Clients collection. 
+ *     summary: Don't require jwt. Give a client list
+ *     description: Retrieve a list of clients from the Clients collection.
+ *     parameters: 
+ *       - in: query
+ *         name: id
+ *         description: ID to filter by. Using this parameter, overrides the others.
+ *         schema:
+ *           type: string 
+ *       - in: query
+ *         name: email
+ *         description: email to filter by. Using this parameter, overrides the others.
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: name
+ *         description: name to filter by. Using this parameter, overrides the others.
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: A list of clients was retrieved successfully.
@@ -105,8 +103,7 @@ class ClientController {
         // The clientId comes in req.userLoggedApi
         const filterByName = req.query.name
         const filterByEmail = req.query.email
-        //const filterById = req.query.id
-        const filterById = req.userLoggedApi
+        const filterById = req.query.id
         const db = getFirestore(appFirebase)
         try {
             const listOfClients = []
@@ -147,7 +144,7 @@ class ClientController {
  * /v1.0/newClient:
  *   post:
  *     tags: [Clients]
- *     summary: Create a new client
+ *     summary: Don't require jwt. Create a new client
  *     description: Create a new client and save it to the Clients collection. The client's logo is uploaded to Firebase Storage and the download URL is saved to Firestore. Not jwt required.
  *     requestBody:
  *       required: true
@@ -232,7 +229,7 @@ class ClientController {
  * /v1.0/updateClient/{id}:
  *   put:
  *     tags: [Clients]
- *     summary: Update a client
+ *     summary: Require jwt. Update a client
  *     description: Update the client details in the JWT.
  *     requestBody:
  *       required: true
@@ -322,8 +319,8 @@ class ClientController {
  * /v1.0/deleteClient/{id}:
  *   delete:
  *     tags: [Clients]
- *     summary: Delete a client
- *     description: Delete the client given in the JWT.
+ *     summary: Require jwt. Delete a client
+ *     description: Delete the client given in the JWT with all his clubs and club bets.
  *     security:
  *       - JWTAuth: []
  *     responses:
@@ -340,6 +337,9 @@ class ClientController {
         const db = getFirestore(appFirebase);
         const storage = getStorage();
         try {
+            // Delete Clubs and club bets
+            deleteClubs(id)
+            // Delete client
             const clientRef = doc(db, 'Clients', id);
             const clientSnap = await getDoc(clientRef);
             if (!clientSnap.exists()) {

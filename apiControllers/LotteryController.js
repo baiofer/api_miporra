@@ -1,5 +1,6 @@
 import { appFirebase } from "../app.js"
 import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, getDoc, deleteDoc, query, where } from "firebase/firestore"
+import { deleteLotteryBets } from "../lib/firebaseFunctions.js"
 
 
 class LotteryController {
@@ -315,7 +316,7 @@ class LotteryController {
      *   delete:
      *     tags: [Lottery]
      *     summary: Delete a lottery
-     *     description: Delete a lottery from the Lotteries collection.
+     *     description: Delete a lottery from the Lotteries collection and all his bets.
      *     parameters:
      *       - in: path
      *         name: id
@@ -345,6 +346,7 @@ class LotteryController {
             if (!lotterySnap.exists()) {
                 throw new Error(`The lottery '${id}' was not found.`);
             }
+            await deleteLotteryBets(id)
             await deleteDoc(lotteryRef);
             res.json({ message: `Lottery '${id}' was deleted successfully.` });
         } catch (error) {

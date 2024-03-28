@@ -393,7 +393,7 @@ class ClubController {
      *   delete:
      *     tags: [Club]
      *     summary: Delete a club
-     *     description: Delete a club from the Clubs collection.
+     *     description: Delete a club from the Clubs collection and all his bets.
      *     parameters:
      *       - in: path
      *         name: id
