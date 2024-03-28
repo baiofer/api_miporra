@@ -74,6 +74,26 @@ class LotteryBetController {
                     listOfLotteryBets.push(data);
                 })
             }
+            // Add lottery data to lotteryBet data
+            await Promise.all(listOfLotteryBets.map( async lotteryBet => {
+                const lotteryBetRef = doc(db, 'Lotteries', lotteryBet.lotteryId);
+                const docSnap1 = await getDoc(lotteryBetRef);
+                if (docSnap1.exists()) {
+                    const dataClient = docSnap1.data();
+                    lotteryBet.lottery = dataClient;
+                }
+                return lotteryBet
+            }))
+            // Add client data to clubBet data
+            await Promise.all(listOfLotteryBets.map( async lotteryBet => {
+                const lotteryRef = doc(db, 'Clients', lotteryBet.lottery.clientId);
+                const docSnap1 = await getDoc(lotteryRef);
+                if (docSnap1.exists()) {
+                    const dataClient = docSnap1.data();
+                    lotteryBet.client = dataClient;
+                }
+                return lotteryBet
+            }))
             res.json({ results: listOfLotteryBets })
         } catch (error) {
             next(error)
@@ -147,6 +167,26 @@ class LotteryBetController {
                     listOfLotteryBets.push(data);
                 })
             }
+            // Add lottery data to lotteryBet data
+            await Promise.all(listOfLotteryBets.map( async lotteryBet => {
+                const lotteryBetRef = doc(db, 'Lotteries', lotteryBet.lotteryId);
+                const docSnap1 = await getDoc(lotteryBetRef);
+                if (docSnap1.exists()) {
+                    const dataClient = docSnap1.data();
+                    lotteryBet.lottery = dataClient;
+                }
+                return lotteryBet
+            }))
+            // Add client data to clubBet data
+            await Promise.all(listOfLotteryBets.map( async lotteryBet => {
+                const lotteryRef = doc(db, 'Clients', lotteryBet.lottery.clientId);
+                const docSnap1 = await getDoc(lotteryRef);
+                if (docSnap1.exists()) {
+                    const dataClient = docSnap1.data();
+                    lotteryBet.client = dataClient;
+                }
+                return lotteryBet
+            }))
             res.json({ results: listOfLotteryBets })
         } catch (error) {
             next(error)

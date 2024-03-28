@@ -75,6 +75,26 @@ class ClubBetController {
                     listOfClubBets.push(data);
                 })
             }
+            // Add club data to clubBet data
+            await Promise.all(listOfClubBets.map( async clubBet => {
+                const clubBetRef = doc(db, 'Clubs', clubBet.clubId);
+                const docSnap1 = await getDoc(clubBetRef);
+                if (docSnap1.exists()) {
+                    const dataClient = docSnap1.data();
+                    clubBet.club = dataClient;
+                }
+                return clubBet
+            }))
+            // Add client data to clubBet data
+            await Promise.all(listOfClubBets.map( async clubBet => {
+                const clubRef = doc(db, 'Clients', clubBet.club.clientId);
+                const docSnap1 = await getDoc(clubRef);
+                if (docSnap1.exists()) {
+                    const dataClient = docSnap1.data();
+                    clubBet.client = dataClient;
+                }
+                return clubBet
+            }))
             res.json({ results: listOfClubBets })
         } catch (error) {
             next(error)
@@ -151,6 +171,26 @@ class ClubBetController {
                     listOfClubBets.push(data);
                 })
             }
+            // Add club data to clubBet data
+            await Promise.all(listOfClubBets.map( async clubBet => {
+                const clubBetRef = doc(db, 'Clubs', clubBet.clubId);
+                const docSnap1 = await getDoc(clubBetRef);
+                if (docSnap1.exists()) {
+                    const dataClient = docSnap1.data();
+                    clubBet.club = dataClient;
+                }
+                return clubBet
+            }))
+            // Add client data to clubBet data
+            await Promise.all(listOfClubBets.map( async clubBet => {
+                const clubRef = doc(db, 'Clients', clubBet.club.clientId);
+                const docSnap1 = await getDoc(clubRef);
+                if (docSnap1.exists()) {
+                    const dataClient = docSnap1.data();
+                    clubBet.client = dataClient;
+                }
+                return clubBet
+            }))
             res.json({ results: listOfClubBets })
         } catch (error) {
             next(error)
