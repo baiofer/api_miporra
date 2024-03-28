@@ -160,7 +160,7 @@ class ClubController {
      *   post:
      *     tags: [Club]
      *     summary: Create a new club
-     *     description: Create a new club and save it to the Clubs collection.
+     *     description: Create a new club and save it to the Clubs collection. The ownwer of the club is the owner of the token
      *     requestBody:
      *       required: true
      *       content:
@@ -276,7 +276,7 @@ class ClubController {
      *   put:
      *     tags: [Club]
      *     summary: Update an existing club
-     *     description: Update an existing club and save it to the Clubs collection.
+     *     description: Update an existing club and save it to the Clubs collection. The club owner must be the owner of the token.
      *     parameters:
      *       - in: path
      *         name: id
@@ -361,6 +361,16 @@ class ClubController {
         const db = getFirestore(appFirebase);
         try {
             const clubRef = doc(db, 'Clubs', id);
+            const docSnap = await getDoc(clubRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.clientId !== clientId) {
+                    res.status(404).json({ error: `The club '${id}' is not property of the token owner. We can't uptate it.`})
+                    return
+                }
+            } else {
+                throw new Error(`The club '${id}' was not found.`);
+            }
             const clubToUpdate = {};
             // Update data if exits
             if (clientId) clubToUpdate.clientId = clientId;
@@ -422,6 +432,11 @@ class ClubController {
             const clubSnap = await getDoc(clubRef);
             if (!clubSnap.exists()) {
                 throw new Error(`The club '${id}' was not found.`);
+            }
+            const data = clubSnap.data();
+            if (data.clientId !== req.userLoggedApi) {
+                res.status(404).json({ error: `The club '${id}' is not property of the token owner. We can't delete it.`})
+                return
             }
             await deleteClubBets(id)
             await deleteDoc(clubRef);
