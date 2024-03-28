@@ -292,6 +292,16 @@ class LotteryController {
         const db = getFirestore(appFirebase);
         try {
             const lotteryRef = doc(db, 'Lotteries', id);
+            const docSnap = await getDoc(lotteryRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.clientId !== clientId) {
+                    res.status(404).json({ error: `The lottery '${id}' is not property of the token owner. We can't update it.`})
+                    return
+                }
+            } else {
+                throw new Error(`The lottery '${id}' was not found.`);
+            }
             const lotteryToUpdate = {};
             // Update data if exits
             if (clientId) lotteryToUpdate.clientId = clientId;
@@ -345,6 +355,11 @@ class LotteryController {
             const lotterySnap = await getDoc(lotteryRef);
             if (!lotterySnap.exists()) {
                 throw new Error(`The lottery '${id}' was not found.`);
+            }
+            const data = lotterySnap.data();
+            if (data.clientId !== req.userLoggedApi) {
+                res.status(404).json({ error: `The lottery '${id}' is not property of the token owner. We can't delete it.`})
+                return
             }
             await deleteLotteryBets(id)
             await deleteDoc(lotteryRef);
