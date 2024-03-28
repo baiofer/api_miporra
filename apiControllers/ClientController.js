@@ -226,11 +226,11 @@ class ClientController {
 
 /**
  * @swagger
- * /v1.0/updateClient/{id}:
+ * /v1.0/updateClient:
  *   put:
  *     tags: [Clients]
  *     summary: Require jwt. Update a client
- *     description: Update the client details in the JWT.
+ *     description: Update the client in the JWT.
  *     requestBody:
  *       required: true
  *       content:
@@ -316,10 +316,10 @@ class ClientController {
 
 /**
  * @swagger
- * /v1.0/deleteClient/{id}:
+ * /v1.0/deleteClient:
  *   delete:
  *     tags: [Clients]
- *     summary: Require jwt. Delete a client
+ *     summary: Require jwt. Delete the client in the JWT.
  *     description: Delete the client given in the JWT with all his clubs and club bets.
  *     security:
  *       - JWTAuth: []
