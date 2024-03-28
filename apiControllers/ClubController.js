@@ -1,5 +1,6 @@
 import { appFirebase } from "../app.js"
 import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, getDoc, deleteDoc, query, where } from "firebase/firestore"
+import { deleteClubBets } from "../lib/firebaseFunctions.js"
 
 
 class ClubController {
@@ -112,7 +113,6 @@ class ClubController {
      *         description: An error occurred while retrieving the clubs.
      */
     async getClubsJWT (req, res, next) {
-        console.log('GET CLUBS')
         const filterById = req.query.id
         // The clientId comes in req.userLoggedApi
         const filterByClientId = req.userLoggedApi
@@ -146,7 +146,6 @@ class ClubController {
             }
             res.json({ results: listOfClubs })
         } catch (error) {
-            console.log(error)
             next(error)
         }
     }
@@ -402,6 +401,8 @@ class ClubController {
      *         description: The id of the club to delete.
      *         schema:
      *           type: string
+     *     security:
+     *       - JWTAuth: []
      *     responses:
      *       200:
      *         description: The club was deleted successfully.
@@ -422,6 +423,7 @@ class ClubController {
             if (!clubSnap.exists()) {
                 throw new Error(`The club '${id}' was not found.`);
             }
+            await deleteClubBets(id)
             await deleteDoc(clubRef);
             res.json({ message: `Club '${id}' was deleted successfully.` });
         } catch (error) {
