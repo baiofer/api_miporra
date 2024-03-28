@@ -67,6 +67,16 @@ class ClubController {
                         listOfClubs.push(data);
                     })
                 }
+                // Add client data to club data
+                await Promise.all(listOfClubs.map( async clientClub => {
+                    const clubRef = doc(db, 'Clients', clientClub.clientId);
+                    const docSnap1 = await getDoc(clubRef);
+                    if (docSnap1.exists()) {
+                        const dataClient = docSnap1.data();
+                        clientClub.client = dataClient;
+                    }
+                    return clientClub
+                }))
                 res.json({ results: listOfClubs })
             } catch (error) {
                 console.log(error)
@@ -116,8 +126,6 @@ class ClubController {
         const filterById = req.query.id
         // The clientId comes in req.userLoggedApi
         const filterByClientId = req.userLoggedApi
-        console.log(req.userLoggedApi)
-        console.log(filterByClientId)
         const filterByState = req.query.state
         const db = getFirestore(appFirebase)
         try {
@@ -138,12 +146,22 @@ class ClubController {
                 if (filterByClientId) q = query(q, where("clientId", "==", filterByClientId));
                 if (filterByState) q = query(q, where("state", "==", filterByState));
                 const clubs = await getDocs(q);
-                clubs.forEach(doc => {
-                    const data = doc.data();
-                    data.id = doc.id;
+                clubs.forEach(async club => {
+                    const data = club.data();
+                    data.id = club.id;
                     listOfClubs.push(data);
                 })
             }
+            // Add client data to club data
+            await Promise.all(listOfClubs.map( async clientClub => {
+                const clubRef = doc(db, 'Clients', clientClub.clientId);
+                const docSnap1 = await getDoc(clubRef);
+                if (docSnap1.exists()) {
+                    const dataClient = docSnap1.data();
+                    clientClub.client = dataClient;
+                }
+                return clientClub
+            }))
             res.json({ results: listOfClubs })
         } catch (error) {
             next(error)

@@ -66,6 +66,16 @@ class LotteryController {
                     listOfLotteries.push(data);
                 })
             }
+            // Add client data to club data
+            await Promise.all(listOfLotteries.map( async clientLottery => {
+                const lotteryRef = doc(db, 'Clients', clientLottery.clientId);
+                const docSnap1 = await getDoc(lotteryRef);
+                if (docSnap1.exists()) {
+                    const dataClient = docSnap1.data();
+                    clientLottery.client = dataClient;
+                }
+                return clientLottery
+            }))
             res.json({ results: listOfLotteries })
         } catch (error) {
             next(error)
@@ -136,6 +146,16 @@ class LotteryController {
                     listOfLotteries.push(data);
                 })
             }
+            // Add client data to club data
+            await Promise.all(listOfLotteries.map( async clientLottery => {
+                const lotteryRef = doc(db, 'Clients', clientLottery.clientId);
+                const docSnap1 = await getDoc(lotteryRef);
+                if (docSnap1.exists()) {
+                    const dataClient = docSnap1.data();
+                    clientLottery.client = dataClient;
+                }
+                return clientLottery
+            }))
             res.json({ results: listOfLotteries })
         } catch (error) {
             next(error)
