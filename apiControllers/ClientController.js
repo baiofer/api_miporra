@@ -350,6 +350,7 @@ class ClientController {
             const decodedUrl = decodeURIComponent(logoUrl);
             const logoPath = decodedUrl.split(/\/o\/(.+)\?/)[1];
             const logoRef = ref(storage, `${logoPath}`);
+            await deleteClubs(id)
             await deleteDoc(clientRef);
             await deleteObject(logoRef);
             res.json({ message: `Client '${id}' was deleted successfully.` });

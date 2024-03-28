@@ -403,7 +403,7 @@ class ClubController {
      *   delete:
      *     tags: [Club]
      *     summary: Delete a club
-     *     description: Delete a club from the Clubs collection and all his bets.
+     *     description: Delete a club from the Clubs collection and all his bets. The club owner must be the owner of the token.
      *     parameters:
      *       - in: path
      *         name: id

@@ -233,7 +233,7 @@ class LotteryController {
      *   put:
      *     tags: [Lottery]
      *     summary: Update an existing lottery. Requites JWT
-     *     description: Update an existing lottery and save it to the Lotteries collection.
+     *     description: Update an existing lottery and save it to the Lotteries collection. The lottery owner must be the owner of the token.
      *     parameters:
      *       - in: path
      *         name: id
@@ -326,7 +326,7 @@ class LotteryController {
      *   delete:
      *     tags: [Lottery]
      *     summary: Delete a lottery
-     *     description: Delete a lottery from the Lotteries collection and all his bets.
+     *     description: Delete a lottery from the Lotteries collection and all his bets. The lottery owner must be the owner of the token.
      *     parameters:
      *       - in: path
      *         name: id
