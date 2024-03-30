@@ -41,25 +41,25 @@ async function main() {
 
 async function initClients(appFirebase) {
     const client1 = {
-        name: 'Fernando',
+        name: 'Taberna Maritxu',
         email: 'fjarilla@gmail.com',
         password: '123456',
         filename: '1.webp'
     }
     const client2 = {
-        name: 'Carlos',
+        name: 'Divinum',
         email: 'carlos.hernandez@motork.io',
         password: '123456',
         filename: '2.webp'
     }
     const client3 = {
-        name: 'Luis',
+        name: 'Bar Sacha',
         email: 'luis@luis.com',
         password: '123456',
         filename: '3.webp'
     }
     const client4 = {
-        name: 'Pedro',
+        name: 'Cafe Arts',
         email: 'pedro@pedro.com.com',
         password: '123456',
         filename: '4.webp'
