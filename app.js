@@ -38,14 +38,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 swaggerMiddleware(app)
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  next();
-});
 app.use(cors({
   origin: 'http://localhost:5174', // Origin to allow
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
 
 // API routes
 const clubController = new ClubController
