@@ -1,6 +1,5 @@
 import createError from "http-errors"
 import express from "express"
-import cors from 'cors'
 import path from "path"
 import { fileURLToPath } from 'url';
 import cookieParser from "cookie-parser";
@@ -38,10 +37,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 swaggerMiddleware(app)
-app.use(cors({
-  origin: 'http://localhost:5174', // Origin to allow
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   next();
