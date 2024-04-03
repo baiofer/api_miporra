@@ -181,16 +181,6 @@ class ClientController {
         const db = getFirestore(appFirebase)
         const storage = getStorage()
         try {
-            //Get file and store it if exits
-            let logoUrl = ''
-            if (req.file) {
-                const storageRef = ref(storage, `logo/${req.file.filename}`);
-                const imageResized = await resizeImage(`uploads/${req.file.filename}`)
-                const snapshot = await uploadBytes(storageRef, imageResized);
-                logoUrl = await getDownloadURL(snapshot.ref);
-                await unlink(`uploads/${req.file.filename}`);
-            } 
-            const newPassword = await this.hashPassword(password)
             // Test if the email exists in BD
             let client = ""
             const clientsRef = collection(db, 'Clients')
@@ -203,6 +193,16 @@ class ClientController {
                 res.status(409).json({ error: 'A client with this email already exists.' })
                 return
             }
+            //Get file and store it if exits
+            let logoUrl = ''
+            if (req.file) {
+                const storageRef = ref(storage, `logo/${req.file.filename}`);
+                const imageResized = await resizeImage(`uploads/${req.file.filename}`)
+                const snapshot = await uploadBytes(storageRef, imageResized);
+                logoUrl = await getDownloadURL(snapshot.ref);
+                await unlink(`uploads/${req.file.filename}`);
+            } 
+            const newPassword = await this.hashPassword(password)
             // Create client
             const createdAt = new Date().toISOString()
             const clientToCreate = {
@@ -219,7 +219,6 @@ class ClientController {
             // Return response
             res.json({ results: clientToCreate });
         } catch (error) {
-            console.log(error)
             res.status(500).json({ error: 'An error occurred while creating the client.'})
         }
     }
