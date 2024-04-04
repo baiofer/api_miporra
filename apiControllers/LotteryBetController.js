@@ -228,7 +228,7 @@ class LotteryBetController {
      *                 format: date
      *                 description: The date when the client do the bet.
      *               betPrice:
-     *                 type: string
+     *                 type: number
      *                 description: The price of the bet.
      *     responses:
      *       200:
@@ -307,7 +307,7 @@ class LotteryBetController {
      *                 format: date
      *                 description: The date when the client do the bet.
      *               betPrice:
-     *                 type: string
+     *                 type: number
      *                 description: The price of the bet.
      *     responses:
      *       200:
