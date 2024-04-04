@@ -284,8 +284,8 @@ class ClientController {
                 return
             }
             if (password) {
-                const newPassword = await this.hashPassword(password)
-                clientToUpdate.password = newPassword;
+                res.status(403).json({ error: 'Modification of the password field is not allowed.' })
+                return
             }
             if (req.file) {
                 // Get the actual logo path
@@ -297,14 +297,17 @@ class ClientController {
                 const logoUrl = await getDownloadURL(snapshot.ref);
                 clientToUpdate.logo = logoUrl;
                 await unlink(`uploads/${req.file.filename}`);
-                // Delete previous image in storage
-                const decodedUrl = decodeURIComponent(previousLogoUrl);
-                const logoPath = decodedUrl.split(/\/o\/(.+)\?/)[1];
-                const logoRef = ref(storage, `${logoPath}`);
-                await deleteObject(logoRef);
+                if (previousLogoUrl !== "") {
+                    // Delete previous image in storage
+                    const decodedUrl = decodeURIComponent(previousLogoUrl);
+                    const logoPath = decodedUrl.split(/\/o\/(.+)\?/)[1];
+                    const logoRef = ref(storage, `${logoPath}`);
+                    await deleteObject(logoRef);
+                }
             }
             // Update client
             clientToUpdate.modifiedAt = new Date().toISOString()
+            console.log(clientToUpdate)
             await updateDoc(clientRef, clientToUpdate);
             clientToUpdate.password = "????"
             res.json({ results: { id, ...clientToUpdate } });
