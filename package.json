@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "cross-env node NODE_ENV=production ./bin/www",
+    "start": "node ./bin/www",
     "dev": "cross-env NODE_ENV=development DEBUG=nodeapp:* nodemon ./bin/www",
     "initDB": "node ./initDB/initDB.js"
   },
