@@ -96,7 +96,7 @@ app.use('/v1.0/updateLotteryBet/:id', jwtAuthMiddleware, lotteryBetController.up
 
 // Login
 app.use('/v1.0/login', loginController.login)
-app.use('/v1.0/recoverPassword', recoverPasswordController.recoverPassword)
+app.use('/v1.0/recovePassword', recoverPasswordController.recoverPassword)
 
 // WEB routes
 

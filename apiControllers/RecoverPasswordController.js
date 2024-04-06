@@ -4,9 +4,8 @@ class RecoverPasswordController {
 
 
     recoverPassword = async (req, res, next) => {
-        console.log('Envio un correo')
         try {
-            sendMail('fjarilla64@gmail.com', 'Prueba de email', 'Este es el texto del email')
+            sendMail(req.query.email, 'Cambiar su password', 'Para cambiar su password, acceda al siguiente link <a href=https://api.miporra.es/>Cambiar password</a>')
         } catch (error) {
             console.log(error)
             next(error)
