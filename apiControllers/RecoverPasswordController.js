@@ -1,4 +1,4 @@
-//import { sendMailAWS } from "../lib/sendEmailAWS.js"
+import { sendMailAWS } from "../lib/sendEmailAWS.js"
 
 class RecoverPasswordController {
 
