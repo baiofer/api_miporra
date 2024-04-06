@@ -18,6 +18,7 @@ import swaggerMiddleware from "./lib/swaggerMiddleware.js";
 import multer from 'multer'
 import { upload } from './lib/uploadConfig.js'
 import { jwtAuthMiddleware } from "./lib/jwtAuthMiddleware.js";
+import RecoverPasswordController from "./apiControllers/RecoverPasswordController.js";
 
 
 export var app = express();
@@ -55,6 +56,7 @@ const clientController = new ClientController
 const clubBetController = new ClubBetController
 const lotteryBetController = new LotteryBetController
 const loginController = new LoginController
+const recoverPasswordController = new RecoverPasswordController
 
 // Clients
 app.use('/v1.0/clients', clientController.getClients);
@@ -94,6 +96,7 @@ app.use('/v1.0/updateLotteryBet/:id', jwtAuthMiddleware, lotteryBetController.up
 
 // Login
 app.use('/v1.0/login', loginController.login)
+app.use('/v1.0/recoverPassword', recoverPasswordController.recoverPassword)
 
 // WEB routes
 

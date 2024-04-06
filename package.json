@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
-    "dev": "cross-env DEBUG=nodeapp:* nodemon ./bin/www",
+    "start": "cross-env node NODE_ENV=production ./bin/www",
+    "dev": "cross-env NODE_ENV=development DEBUG=nodeapp:* nodemon ./bin/www",
     "initDB": "node ./initDB/initDB.js"
   },
   "type": "module",
@@ -22,9 +22,11 @@
     "firebase": "^10.8.1",
     "http-errors": "~1.6.3",
     "jsonwebtoken": "^9.0.2",
+    "mailgun": "^0.5.0",
     "morgan": "~1.9.1",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.13",
+    "nodemailer-mailgun-transport": "^2.1.5",
     "sharp": "^0.33.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
