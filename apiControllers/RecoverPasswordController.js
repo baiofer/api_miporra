@@ -1,7 +1,3 @@
-import { appFirebase } from "../app.js"
-import { getFirestore, collection, query, getDocs, where } from "firebase/firestore"
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
 import { sendMail } from "../lib/sendEmail.js"
 
 class RecoverPasswordController {
