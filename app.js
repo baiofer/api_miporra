@@ -19,6 +19,7 @@ import multer from 'multer'
 import { upload } from './lib/uploadConfig.js'
 import { jwtAuthMiddleware } from "./lib/jwtAuthMiddleware.js";
 import RecoverPasswordController from "./apiControllers/RecoverPasswordController.js";
+import ValidationsController from "./apiControllers/ValidationController.js";
 
 
 export var app = express();
@@ -55,6 +56,7 @@ const lotteryController = new LotteryController
 const clientController = new ClientController
 const clubBetController = new ClubBetController
 const lotteryBetController = new LotteryBetController
+const validationsController = new ValidationsController
 const loginController = new LoginController
 const recoverPasswordController = new RecoverPasswordController
 
@@ -93,6 +95,11 @@ app.use('/v1.0/lotteryBetsJwt', jwtAuthMiddleware, lotteryBetController.getLotte
 app.use('/v1.0/newLotteryBet', jwtAuthMiddleware, lotteryBetController.createLotteryBet);
 app.use('/v1.0/deleteLotteryBet/:id', jwtAuthMiddleware, lotteryBetController.deleteLotteryBet);
 app.use('/v1.0/updateLotteryBet/:id', jwtAuthMiddleware, lotteryBetController.updateLotteryBet);
+
+// Validations
+app.use('/v1.0/validationsJwt', jwtAuthMiddleware, validationsController.getValidationsJWT);
+app.use('/v1.0/newValidation', validationsController.createValidation);
+app.use('/v1.0/deleteValidation/:id', jwtAuthMiddleware, validationsController.deleteValidation);
 
 // Login
 app.use('/v1.0/login', loginController.login)
