@@ -20,6 +20,7 @@ import { upload } from './lib/uploadConfig.js'
 import { jwtAuthMiddleware } from "./lib/jwtAuthMiddleware.js";
 import RecoverPasswordController from "./apiControllers/RecoverPasswordController.js";
 import ValidationsController from "./apiControllers/ValidationController.js";
+import InitBadgesController from "./apiControllers/InitBadgesController.js";
 
 
 export var app = express();
@@ -59,6 +60,7 @@ const lotteryBetController = new LotteryBetController
 const validationsController = new ValidationsController
 const loginController = new LoginController
 const recoverPasswordController = new RecoverPasswordController
+const initBadgesController = new InitBadgesController
 
 // Clients
 app.use('/v1.0/clients', clientController.getClients);
@@ -101,12 +103,18 @@ app.use('/v1.0/validationsJwt', jwtAuthMiddleware, validationsController.getVali
 app.use('/v1.0/newValidation', validationsController.createValidation);
 app.use('/v1.0/deleteValidation/:id', jwtAuthMiddleware, validationsController.deleteValidation);
 
+// Badges
+//initBadgesController.initBadges()
+app.use('/v1.0/badges', initBadgesController.getBadges)
+
 // Login
 app.use('/v1.0/login', loginController.login)
 app.use('/v1.0/recovePassword', recoverPasswordController.recoverPassword)
 
-// WEB routes
 
+
+
+// WEB routes
 app.use('/', router);
 
 // catch 404 and forward to error handler
