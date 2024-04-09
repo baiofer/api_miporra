@@ -50,6 +50,7 @@ class ClientController {
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 const data = docSnap.data();
+                data.password = '******'
                 data.id = docSnap.id;
                 listOfClients.push(data);
             }
@@ -114,6 +115,7 @@ class ClientController {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     data.id = docSnap.id;
+                    data.password = '******'
                     listOfClients.push(data);
                 }
             // Filter by the rest of params
