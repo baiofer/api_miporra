@@ -27,7 +27,7 @@ class RecoverPasswordController {
         })
         const from = 'miporra.info@gmail.com'
         const to = email
-        const subject = 'Email de prueba desde miporra.es'
+        const subject = 'Solicitud de reseteo de contraseña.'
         const html = `<p></p>Has solicitado restablecer tu contraseña. Por favor, haz click en el siguiente enlace para restablecer tu contraseña:</p><p><a href="${link}?token=${tokenJWT}">Restablecer contraseña</a></p>`
         try {
            const result = await sendEmail(from, to, subject, html)
