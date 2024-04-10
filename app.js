@@ -21,6 +21,7 @@ import { jwtAuthMiddleware } from "./lib/jwtAuthMiddleware.js";
 import RecoverPasswordController from "./apiControllers/RecoverPasswordController.js";
 import ValidationsController from "./apiControllers/ValidationController.js";
 import InitBadgesController from "./apiControllers/InitBadgesController.js";
+import SendEmailController from "./apiControllers/SendEmailController.js";
 
 
 export var app = express();
@@ -61,6 +62,7 @@ const validationsController = new ValidationsController
 const loginController = new LoginController
 const recoverPasswordController = new RecoverPasswordController
 const initBadgesController = new InitBadgesController
+const sendEmailController = new SendEmailController
 
 // Clients
 app.use('/v1.0/clients', clientController.getClients);
@@ -110,6 +112,10 @@ app.use('/v1.0/badges', initBadgesController.getBadges)
 // Login
 app.use('/v1.0/login', loginController.login)
 app.use('/v1.0/recovePassword', recoverPasswordController.recoverPassword)
+app.use('/v1.0/resetPassword', jwtAuthMiddleware, recoverPasswordController.resetPassword)
+
+// Others
+app.use('/v1.0/sendEmail', sendEmailController.sendEmail)
 
 
 
