@@ -41,7 +41,7 @@ class SendEmailController {
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/Others'
+     *               $ref: '#/components/schemas/SendMail'
      *       500:
      *         description: An error occurred while sending the email.
      */
