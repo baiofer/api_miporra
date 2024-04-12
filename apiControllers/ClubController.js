@@ -23,6 +23,11 @@ class ClubController {
      *         schema:
      *           type: string 
      *       - in: query
+     *         name: clientId
+     *         description: ClientId to filter by. Using this parameter, overrides the others.
+     *         schema:
+     *           type: string 
+     *       - in: query
      *         name: state
      *         description: State to filter by.
      *         schema:
@@ -42,6 +47,7 @@ class ClubController {
      */
         async getClubs (req, res, next) {
             const filterById = req.query.id
+            const filterByClientId = req.query.clientId
             const filterByState = req.query.state
             const db = getFirestore(appFirebase)
             try {
@@ -59,6 +65,7 @@ class ClubController {
                 } else {
                     const clubsRef = collection(db, 'Clubs');
                     let q = query(clubsRef);
+                    if (filterByClientId) q = query(q, where("clientId", "==", filterByClientId));
                     if (filterByState) q = query(q, where("state", "==", filterByState));
                     const clubs = await getDocs(q);
                     clubs.forEach(doc => {
