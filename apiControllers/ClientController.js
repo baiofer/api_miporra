@@ -128,6 +128,7 @@ class ClientController {
                 clients.forEach(doc => {
                     const data = doc.data();
                     data.id = doc.id;
+                    data.password = '******'
                     listOfClients.push(data);
                 })
             }
@@ -269,7 +270,6 @@ class ClientController {
  *         description: An error occurred while updating the client.
  */
     updateClient = async (req, res, next) => {
-        console.log(req.body)
         const { name, email, password } = req.body;
         // The clientId comes in req.userLoggedApi
         const id = req.userLoggedApi;
@@ -291,17 +291,15 @@ class ClientController {
                 return
             }
             if (req.file) {
-                console.log('Req.file: ', req.file)
                 // Get the actual logo path
                 const previousLogoUrl = client.logo
                 // Get the image
                 const storageRef = ref(storage, `logo/${req.file.filename}`);
                 const imageData = fs.readFileSync(`uploads/${req.file.filename}`)
-                console.log(req.file.filename, imageData)
                 const snapshot = await uploadBytes(storageRef, imageData);
                 const logoUrl = await getDownloadURL(snapshot.ref);
                 clientToUpdate.logo = logoUrl;
-                //await unlink(`uploads/${req.file.filename}`);
+                await unlink(`uploads/${req.file.filename}`);
                 if (previousLogoUrl !== "") {
                     // Delete previous image in storage
                     const decodedUrl = decodeURIComponent(previousLogoUrl);
@@ -312,9 +310,8 @@ class ClientController {
             }
             // Update client
             clientToUpdate.modifiedAt = new Date().toISOString()
-            console.log(clientToUpdate)
             await updateDoc(clientRef, clientToUpdate);
-            clientToUpdate.password = "????"
+            clientToUpdate.password = "****"
             res.json({ results: { id, ...clientToUpdate } });
         } catch (error) {
             res.status(404).json({ error: `The client '${req.params.id}' was not found.`})
