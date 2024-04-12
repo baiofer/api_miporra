@@ -269,6 +269,7 @@ class ClientController {
  *         description: An error occurred while updating the client.
  */
     updateClient = async (req, res, next) => {
+        console.log(req.body)
         const { name, email, password } = req.body;
         // The clientId comes in req.userLoggedApi
         const id = req.userLoggedApi;
@@ -290,6 +291,7 @@ class ClientController {
                 return
             }
             if (req.file) {
+                console.log('Req.file: ', req.file)
                 // Get the actual logo path
                 const previousLogoUrl = client.logo
                 // Get the image
