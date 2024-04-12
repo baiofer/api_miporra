@@ -255,7 +255,7 @@ class ClubController {
      *         description: An error occurred while creating the club.
      */
     async createClub (req, res, next) {
-        const { match1HomeTeam, match1AwayTeam, match1Date, match1Hour, match2HomeTeam, match2AwayTeam, match2Date, match2hour, betPrice, accumulatedPrize, accumulatedJackpot, limitDateForBets, limitHourForBets, state, numberOfWinners } = req.body
+        const { match1HomeTeam, match1AwayTeam, match1Date, match1Hour, match2HomeTeam, match2AwayTeam, match2Date, match2Hour, betPrice, accumulatedPrize, accumulatedJackpot, limitDateForBets, limitHourForBets, state, numberOfWinners } = req.body
         // The clientId comes in req.userLoggedApi
         const clientId = req.userLoggedApi
         const db = getFirestore(appFirebase)
@@ -271,7 +271,7 @@ class ClubController {
                 match2HomeTeam, 
                 match2AwayTeam, 
                 match2Date, 
-                match2hour, 
+                match2Hour, 
                 betPrice, 
                 accumulatedPrize, 
                 accumulatedJackpot, 
@@ -287,7 +287,7 @@ class ClubController {
             // Return response
             res.json({ results: clubToCreate });
         } catch (error) {
-            res.status(500).json({ error: 'An error occurred while creating the club.'})
+            res.json({ error: 'An error occurred while creating the club.'})
         }
     }
 
