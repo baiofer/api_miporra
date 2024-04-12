@@ -301,7 +301,7 @@ class ClientController {
                 const snapshot = await uploadBytes(storageRef, imageData);
                 const logoUrl = await getDownloadURL(snapshot.ref);
                 clientToUpdate.logo = logoUrl;
-                await unlink(`uploads/${req.file.filename}`);
+                //await unlink(`uploads/${req.file.filename}`);
                 if (previousLogoUrl !== "") {
                     // Delete previous image in storage
                     const decodedUrl = decodeURIComponent(previousLogoUrl);
