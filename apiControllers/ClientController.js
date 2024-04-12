@@ -295,6 +295,7 @@ class ClientController {
                 // Get the image
                 const storageRef = ref(storage, `logo/${req.file.filename}`);
                 const imageData = fs.readFileSync(`uploads/${req.file.filename}`)
+                console.log(req.file.filename, imageData)
                 const snapshot = await uploadBytes(storageRef, imageData);
                 const logoUrl = await getDownloadURL(snapshot.ref);
                 clientToUpdate.logo = logoUrl;
