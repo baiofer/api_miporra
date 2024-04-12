@@ -1,6 +1,4 @@
-//import firebaseConfig from "../lib/firebaseConfig.js"
 import { appFirebase } from "../app.js"
-import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, addDoc, query, limit, writeBatch } from "firebase/firestore"
 import { getStorage, ref, listAll, deleteObject, uploadBytes, getDownloadURL } from "firebase/storage";
 import { resizeImage } from "../lib/resizeImage.js";
@@ -216,11 +214,10 @@ class InitBadgesController {
 
     async initBadges() {
         // Init firebase
-        const appFirebase = initializeApp(firebaseConfig)
         const db = getFirestore(appFirebase);
 
         // Init badges
-        const badges = ["alaves", "almeria", "athletic", "atletico", "barcelona", "betis", "cadiz", "celta", "getafe", "girona", "lasPalmas", "mallorca", "osasuna", "rayo", "realMadrid", "realSociedad", "sevilla", "valencia", "villareal"]
+        const badges = ["alaves", "almeria", "athletic", "atletico", "barcelona", "betis", "cadiz", "celta", "getafe", "girona", "lasPalmas", "mallorca", "osasuna", "rayo", "realMadrid", "realSociedad", "sevilla", "valencia", "villareal", "granada"]
 
         // Delete colecction Badges, and folder badges
         await deleteCollection(db, 'Badges', 100)

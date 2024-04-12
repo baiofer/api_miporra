@@ -106,7 +106,7 @@ app.use('/v1.0/newValidation', validationsController.createValidation);
 app.use('/v1.0/deleteValidation/:id', jwtAuthMiddleware, validationsController.deleteValidation);
 
 // Badges
-//initBadgesController.initBadges()
+initBadgesController.initBadges()
 app.use('/v1.0/badges', initBadgesController.getBadges)
 
 // Login
