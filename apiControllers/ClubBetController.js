@@ -334,6 +334,8 @@ class ClubBetController {
      *               betPrice:
      *                 type: number
      *                 description: The price of the bet.
+     *     security:
+     *       - JWTAuth: []
      *     responses:
      *       200:
      *         description: The club bet was updated successfully.
@@ -385,6 +387,8 @@ class ClubBetController {
      *         description: The id of the club bet to delete.
      *         schema:
      *           type: string
+     *     security:
+     *       - JWTAuth: []
      *     responses:
      *       200:
      *         description: The club bet was deleted successfully.

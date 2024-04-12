@@ -89,14 +89,14 @@ app.use('/v1.0/updateLottery/:id', jwtAuthMiddleware, lotteryController.updateLo
 // Club bets
 app.use('/v1.0/clubBets', clubBetController.getClubBets);
 app.use('/v1.0/clubBetsJwt', jwtAuthMiddleware, clubBetController.getClubBetsJwt);
-app.use('/v1.0/newClubBet', jwtAuthMiddleware, clubBetController.createClubBet);
+app.use('/v1.0/newClubBet', clubBetController.createClubBet);
 app.use('/v1.0/deleteClubBet/:id', jwtAuthMiddleware, clubBetController.deleteClubBet);
 app.use('/v1.0/updateClubBet/:id', jwtAuthMiddleware, clubBetController.updateClubBet);
 
 // Lottery bets
 app.use('/v1.0/lotteryBets', lotteryBetController.getLotteryBets);
 app.use('/v1.0/lotteryBetsJwt', jwtAuthMiddleware, lotteryBetController.getLotteryBetsJwt);
-app.use('/v1.0/newLotteryBet', jwtAuthMiddleware, lotteryBetController.createLotteryBet);
+app.use('/v1.0/newLotteryBet', lotteryBetController.createLotteryBet);
 app.use('/v1.0/deleteLotteryBet/:id', jwtAuthMiddleware, lotteryBetController.deleteLotteryBet);
 app.use('/v1.0/updateLotteryBet/:id', jwtAuthMiddleware, lotteryBetController.updateLotteryBet);
 

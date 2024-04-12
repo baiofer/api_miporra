@@ -232,7 +232,7 @@ class LotteryBetController {
      *                 description: The price of the bet.
      *     responses:
      *       200:
-     *         description: The lottery bet was created successfully.
+     *         description: The lottery bet was created successfully or the selectedNumber is already selected.
      *         content:
      *           application/json:
      *             schema:
@@ -241,10 +241,11 @@ class LotteryBetController {
      *         description: An error occurred while creating the lottery bet.
      */
     async createLotteryBet (req, res, next) {
+        console.log
         const { lotteryId, userEmail, userName, selectedNumber, betDate, betPrice } = req.body
         const db = getFirestore(appFirebase)
         try {
-            // Create club
+            // Create lottery bet
             const createdAt = new Date().toISOString()
             const lotteryBetToCreate = {
                 lotteryId, 
@@ -255,11 +256,28 @@ class LotteryBetController {
                 betPrice,  
                 createdAt,
             }
-            const createdLotteryBet = await addDoc(collection(db, 'LotteryBets'), lotteryBetToCreate)
-            // Add id to createdLottery
-            lotteryBetToCreate.id = createdLotteryBet.id
-            // Return response
-            res.json({ results: lotteryBetToCreate });
+            // Get all bets from the lotteryId
+            const selectedNumbers = []
+            const lotteryBetsRef = collection(db, 'LotteryBets');
+            let q = query(lotteryBetsRef);
+            q = query(q, where("lotteryId", "==", lotteryId));
+            const lotteryBets = await getDocs(q);
+            lotteryBets.forEach(doc => {
+                const data = doc.data();
+                // Get numbers selected
+                selectedNumbers.push(parseInt(data.selectedNumber));
+            })
+            // If selectedNumber in lotteryBetToCreate is included in numbersSelected, respond a message indicating that the selecterNumber is already selected.
+            if (selectedNumbers.includes(selectedNumber)) {
+                res.json({ results: {response: `The number ${lotteryBetToCreate.selectedNumber} is already selected` }});
+            } else {
+                // Create loteryBet
+                const createdLotteryBet = await addDoc(collection(db, 'LotteryBets'), lotteryBetToCreate)
+                // Add id to createdLottery
+                lotteryBetToCreate.id = createdLotteryBet.id
+                // Return response
+                res.json({ results: lotteryBetToCreate });
+            }
         } catch (error) {
             res.status(500).json({ error: 'An error occurred while creating the lottery bet.'})
         }
@@ -309,6 +327,8 @@ class LotteryBetController {
      *               betPrice:
      *                 type: number
      *                 description: The price of the bet.
+     *     security:
+     *       - JWTAuth: []
      *     responses:
      *       200:
      *         description: The lottery bet was updated successfully.
@@ -360,6 +380,8 @@ class LotteryBetController {
      *         description: The id of the lottery bet to delete.
      *         schema:
      *           type: string
+     *     security:
+     *       - JWTAuth: []
      *     responses:
      *       200:
      *         description: The lottery bet was deleted successfully.
