@@ -203,6 +203,9 @@ class LotteryController {
      *               lotteryPrize:
      *                 type: string
      *                 description: The prize for the winner.
+     *               winnerNumber:
+     *                 type: string
+     *                 description: The number that win the lottery.
      *     security:
      *       - JWTAuth: []
      *     responses:
@@ -216,7 +219,7 @@ class LotteryController {
      *         description: An error occurred while creating the lottery.
      */
     async createLottery (req, res, next) {
-        const { firstNumber, totalNumbers, dateOfLottery, dateLimitOfBets, betPrice, howToWin, lotteryPrize } = req.body
+        const { firstNumber, totalNumbers, dateOfLottery, dateLimitOfBets, betPrice, howToWin, lotteryPrize, winnerNumber } = req.body
         const clientId = req.userLoggedApi
         const db = getFirestore(appFirebase)
         try {
@@ -232,6 +235,7 @@ class LotteryController {
                 howToWin, 
                 lotteryPrize, 
                 createdAt,
+                winnerNumber
             }
             const createdLottery = await addDoc(collection(db, 'Lotteries'), lotteryToCreate)
             // Add id to createdLottery
@@ -291,6 +295,9 @@ class LotteryController {
      *               lotteryPrize:
      *                 type: string
      *                 description: The prize for the winner.
+     *               winnerNumber:
+     *                 type: string
+     *                 description: The number that win the lottery.
      *     security:
      *       - JWTAuth: []
      *     responses:
@@ -306,7 +313,7 @@ class LotteryController {
      *         description: An error occurred while updating the lottery.
      */
     async updateLottery (req, res, next) {
-        const { firstNumber, totalNumbers, dateOfLottery, dateLimitOfBets, betPrice, howToWin, lotteryPrize } = req.body
+        const { firstNumber, totalNumbers, dateOfLottery, dateLimitOfBets, betPrice, howToWin, lotteryPrize, winnerNumber } = req.body
         const clientId = req.userLoggedApi
         const { id } = req.params;
         const db = getFirestore(appFirebase);
@@ -332,6 +339,7 @@ class LotteryController {
             if (betPrice) lotteryToUpdate.betPrice = betPrice;
             if (howToWin) lotteryToUpdate.howToWin = howToWin;
             if (lotteryPrize) lotteryToUpdate.lotteryPrize = lotteryPrize;
+            if (winnerNumber) lotteryToUpdate.winnerNumber = winnerNumber;
             lotteryToUpdate.modifiedAt = new Date().toISOString()
             await updateDoc(lotteryRef, lotteryToUpdate);
             res.json({ results: { id, ...lotteryToUpdate } });
