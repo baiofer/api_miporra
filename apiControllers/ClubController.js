@@ -242,6 +242,18 @@ class ClubController {
      *               numberOfWinners:
      *                 type: number
      *                 description: The number of winners.
+     *               match1HomeTeamResult:
+     *                 type: number
+     *                 description: The result of the home team 1.
+     *               match1AwayTeamResult:
+     *                 type: number
+     *                 description: The result of the home team 1.
+     *               match2HomeTeamResult:
+     *                 type: number
+     *                 description: The result of the home team 1.
+     *               match2AwayTeamResult:
+     *                 type: number
+     *                 description: The result of the home team 1.
      *     security:
      *       - JWTAuth: []
      *     responses:
@@ -255,7 +267,7 @@ class ClubController {
      *         description: An error occurred while creating the club.
      */
     async createClub (req, res, next) {
-        const { match1HomeTeam, match1AwayTeam, match1Date, match1Hour, match2HomeTeam, match2AwayTeam, match2Date, match2Hour, betPrice, accumulatedPrize, accumulatedJackpot, limitDateForBets, limitHourForBets, state, numberOfWinners } = req.body
+        const { match1HomeTeam, match1AwayTeam, match1Date, match1Hour, match2HomeTeam, match2AwayTeam, match2Date, match2Hour, betPrice, accumulatedPrize, accumulatedJackpot, limitDateForBets, limitHourForBets, state, numberOfWinners, match1HomeTeamResult, match2HomeTeamResult, match1AwayTeamResult, match2AwayTeamResult } = req.body
         // The clientId comes in req.userLoggedApi
         const clientId = req.userLoggedApi
         const db = getFirestore(appFirebase)
@@ -280,6 +292,10 @@ class ClubController {
                 state, 
                 numberOfWinners,
                 createdAt,
+                match1AwayTeamResult,
+                match1HomeTeamResult,
+                match2AwayTeamResult,
+                match2HomeTeamResult
             }
             const createdClub = await addDoc(collection(db, 'Clubs'), clubToCreate)
             // Add id to createdClient
@@ -364,6 +380,18 @@ class ClubController {
      *               numberOfWinners:
      *                 type: number
      *                 description: The number of winners.
+     *               match1HomeTeamResult:
+     *                 type: number
+     *                 description: The result of the home team 1.
+     *               match1AwayTeamResult:
+     *                 type: number
+     *                 description: The result of the home team 1.
+     *               match2HomeTeamResult:
+     *                 type: number
+     *                 description: The result of the home team 1.
+     *               match2AwayTeamResult:
+     *                 type: number
+     *                 description: The result of the home team 1.
      *     security:
      *       - JWTAuth: []
      *     responses:
@@ -379,7 +407,7 @@ class ClubController {
      *         description: An error occurred while updating the club.
      */
     async updateClub (req, res, next) {
-        const { match1HomeTeam, match1AwayTeam, match1Date, match1Hour, match2HomeTeam, match2AwayTeam, match2Date, match2hour, betPrice, accumulatedPrize, accumulatedJackpot, limitDateForBets, limitHourForBets, state, numberOfWinners } = req.body
+        const { match1HomeTeam, match1AwayTeam, match1Date, match1Hour, match2HomeTeam, match2AwayTeam, match2Date, match2hour, betPrice, accumulatedPrize, accumulatedJackpot, limitDateForBets, limitHourForBets, state, numberOfWinners, match1HomeTeamResult, match2HomeTeamResult, match1AwayTeamResult, match2AwayTeamResult } = req.body
         const { id } = req.params;
         // The clientId comes in req.userLoggedApi
         const clientId = req.userLoggedApi
@@ -414,6 +442,10 @@ class ClubController {
             if (limitHourForBets) clubToUpdate.limitHourForBets = limitHourForBets;
             if (state) clubToUpdate.state = state;
             if (numberOfWinners) clubToUpdate.numberOfWinners = numberOfWinners;
+            if (match1HomeTeamResult) clubToUpdate.match1HomeTeamResult = match1HomeTeamResult;
+            if (match2HomeTeamResult) clubToUpdate.match2HomeTeamResult = match2HomeTeamResult;
+            if (match2AwayTeamResult) clubToUpdate.match2AwayTeamResult = match2AwayTeamResult;
+            if (match1AwayTeamResult) clubToUpdate.match1AwayTeamResult = match1AwayTeamResult;
             clubToUpdate.modifiedAt = new Date().toISOString()
             await updateDoc(clubRef, clubToUpdate);
             res.json({ results: { id, ...clubToUpdate } });
