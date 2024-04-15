@@ -241,7 +241,6 @@ class LotteryBetController {
      *         description: An error occurred while creating the lottery bet.
      */
     async createLotteryBet (req, res, next) {
-        console.log
         const { lotteryId, userEmail, userName, selectedNumber, betDate, betPrice } = req.body
         const db = getFirestore(appFirebase)
         try {
@@ -279,6 +278,7 @@ class LotteryBetController {
                 res.json({ results: lotteryBetToCreate });
             }
         } catch (error) {
+            console.log('CreateLotteryBet: ', error)
             res.status(500).json({ error: 'An error occurred while creating the lottery bet.'})
         }
     }
@@ -361,7 +361,7 @@ class LotteryBetController {
             await updateDoc(lotteryBetRef, lotteryBetToUpdate);
             res.json({ results: { id, ...lotteryBetToUpdate } });
         } catch (error) {
-            console.log(error)
+            console.log('UpdateLotteryBet: ', error)
             res.status(404).json({ error: `The lottery bet '${req.params.id}' was not found.`})
         }
     }
@@ -405,6 +405,7 @@ class LotteryBetController {
             await deleteDoc(lotteryBetRef);
             res.json({ message: `Lottery bet '${id}' was deleted successfully.` });
         } catch (error) {
+            console.log('DeleteLotteryBet: ', error)
             res.status(404).json({ error: error.message})
         }
     }

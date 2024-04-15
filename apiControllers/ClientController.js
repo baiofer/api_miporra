@@ -56,6 +56,7 @@ class ClientController {
             }
             res.json({ results: listOfClients })
         } catch (error) {
+            console.log('GetClientsJwt: ', error)
             next(error)
         }
     }
@@ -134,6 +135,7 @@ class ClientController {
             }
             res.json({ results: listOfClients })
         } catch (error) {
+            console.log('GetClients: ', error)
             next(error)
         }
     }
@@ -222,6 +224,7 @@ class ClientController {
             // Return response
             res.json({ results: clientToCreate });
         } catch (error) {
+            console.log('CreateClient: ', error)
             res.status(500).json({ error: 'An error occurred while creating the client.'})
         }
     }
@@ -314,6 +317,7 @@ class ClientController {
             clientToUpdate.password = "****"
             res.json({ results: { id, ...clientToUpdate } });
         } catch (error) {
+            console.log('UpdateClient: ', error)
             res.status(404).json({ error: `The client '${req.params.id}' was not found.`})
         }
     }
@@ -362,6 +366,7 @@ class ClientController {
             if (error.code === 'storage/object-not-found') {
                 res.json({ message: `Client '${id}' was deleted successfully!.` });
             } else {
+                console.log('deleteClient: ', error)
                 res.status(404).json({ error: error.message})
             }
         }

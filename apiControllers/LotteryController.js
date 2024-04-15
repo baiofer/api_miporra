@@ -243,7 +243,7 @@ class LotteryController {
             // Return response
             res.json({ results: lotteryToCreate });
         } catch (error) {
-            console.log(error)
+            console.log('CreateLottery: ', error)
             res.status(500).json({ error: 'An error occurred while creating the lottery.'})
         }
     }
@@ -345,6 +345,7 @@ class LotteryController {
             await updateDoc(lotteryRef, lotteryToUpdate);
             res.json({ results: { id, ...lotteryToUpdate } });
         } catch (error) {
+            console.log('UpdateLottery: ', error)
             res.status(404).json({ error: `The lottery '${req.params.id}' was not found.`})
         }
     }
@@ -394,6 +395,7 @@ class LotteryController {
             await deleteDoc(lotteryRef);
             res.json({ message: `Lottery '${id}' was deleted successfully.` });
         } catch (error) {
+            console.log('DeletteLottery: ', error)
             res.status(404).json({ error: error.message})
         }
     }

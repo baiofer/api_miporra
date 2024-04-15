@@ -303,7 +303,7 @@ class ClubController {
             // Return response
             res.json({ results: clubToCreate });
         } catch (error) {
-            console.log(error)
+            console.log('CreateClub: ', error)
             res.json({ error: 'An error occurred while creating the club.'})
         }
     }
@@ -451,6 +451,7 @@ class ClubController {
             await updateDoc(clubRef, clubToUpdate);
             res.json({ results: { id, ...clubToUpdate } });
         } catch (error) {
+            console.log('UpdateClub: ', error)
             res.status(404).json({ error: `The club '${req.params.id}' was not found.`})
         }
     }
@@ -500,6 +501,7 @@ class ClubController {
             await deleteDoc(clubRef);
             res.json({ message: `Club '${id}' was deleted successfully.` });
         } catch (error) {
+            console.log('DeleteClub: ', error)
             res.status(404).json({ error: error.message})
         }
     }

@@ -138,6 +138,7 @@ class ValidationsController {
             // Return response
             res.json({ results: validationToCreate });
         } catch (error) {
+            console.log('CreateValidation: ', error)
             res.status(500).json({ error: 'An error occurred while creating the validation.'})
         }
     }
@@ -186,6 +187,7 @@ class ValidationsController {
             await deleteDoc(validationRef);
             res.json({ message: `Validation '${id}' was deleted successfully.` });
         } catch (error) {
+            console.log('DeleteValidation: ', error)
             res.status(404).json({ error: error.message})
         }
     }

@@ -97,6 +97,7 @@ class ClubBetController {
             }))
             res.json({ results: listOfClubBets })
         } catch (error) {
+            console.log('getClubBetsJwt: ', error)
             next(error)
         }
     }
@@ -193,6 +194,7 @@ class ClubBetController {
             }))
             res.json({ results: listOfClubBets })
         } catch (error) {
+            console.log('GetClubsBets: ', error)
             next(error)
         }
     }
@@ -277,6 +279,7 @@ class ClubBetController {
             // Return response
             res.json({ results: clubBetToCreate });
         } catch (error) {
+            console.log('CreateClubBet: ', error)
             res.status(500).json({ error: 'An error occurred while creating the club bet.'})
         }
     }
@@ -369,6 +372,7 @@ class ClubBetController {
             await updateDoc(clubBetRef, clubBetToUpdate);
             res.json({ results: { id, ...clubBetToUpdate } });
         } catch (error) {
+            console.log('UpdateClubBet: ', error)
             res.status(404).json({ error: `The club bet '${req.params.id}' was not found.`})
         }
     }
@@ -412,6 +416,7 @@ class ClubBetController {
             await deleteDoc(clubBetRef);
             res.json({ message: `Club bet '${id}' was deleted successfully.` });
         } catch (error) {
+            console.log('DeleteClubbet: ', error)
             res.status(404).json({ error: error.message})
         }
     }
