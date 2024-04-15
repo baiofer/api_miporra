@@ -132,6 +132,34 @@ class ValidationsController {
                 bet,
                 createdAt,
             }
+            if (type !== "club") {
+                // Get all bets from the lotteryId
+                const selectedNumbers = []
+                const lotteryBetsRef = collection(db, 'LotteryBets');
+                let q = query(lotteryBetsRef);
+                q = query(q, where("lotteryId", "==", bet.lotteryId));
+                const lotteryBets = await getDocs(q);
+                lotteryBets.forEach(doc => {
+                    const data = doc.data();
+                    // Get numbers selected
+                    selectedNumbers.push(parseInt(data.selectedNumber));
+                })
+                // Get all bets from validations
+                const validationsRef = collection(db, "Validations")
+                let q1 = query(validationsRef);
+                q1 = query(q1, where("type", "==", "lottery"));
+                const validations = await getDocs(q1);
+                validations.forEach(validation => {
+                    const data = validation.data();
+                    // Get numbers selected
+                    selectedNumbers.push(parseInt(data.bet.selectedNumber));
+                })
+                // If selectedNumber in lotteryBetToCreate is included in numbersSelected, respond a message indicating that the selecterNumber is already selected.
+                if (selectedNumbers.includes(bet.selectedNumber)) {
+                    return res.json({ results: {response: `The number ${bet.selectedNumber} is already selected` }});
+                }
+            }
+            // Add validation to table
             const createdValidation = await addDoc(collection(db, 'Validations'), validationToCreate)
             // Add id to createdValidation
             validationToCreate.id = createdValidation.id
