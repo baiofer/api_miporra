@@ -292,10 +292,10 @@ class ClubController {
                 state, 
                 numberOfWinners,
                 createdAt,
-                match1AwayTeamResult,
-                match1HomeTeamResult,
-                match2AwayTeamResult,
-                match2HomeTeamResult
+                match1AwayTeamResult: match1AwayTeamResult || null,
+                match1HomeTeamResult: match1HomeTeamResult || null,
+                match2AwayTeamResult: match2AwayTeamResult || null,
+                match2HomeTeamResult: match2HomeTeamResult || null
             }
             const createdClub = await addDoc(collection(db, 'Clubs'), clubToCreate)
             // Add id to createdClient
@@ -303,6 +303,7 @@ class ClubController {
             // Return response
             res.json({ results: clubToCreate });
         } catch (error) {
+            console.log(error)
             res.json({ error: 'An error occurred while creating the club.'})
         }
     }

@@ -235,7 +235,7 @@ class LotteryController {
                 howToWin, 
                 lotteryPrize, 
                 createdAt,
-                winnerNumber
+                winnerNumber: winnerNumber || null
             }
             const createdLottery = await addDoc(collection(db, 'Lotteries'), lotteryToCreate)
             // Add id to createdLottery
@@ -243,6 +243,7 @@ class LotteryController {
             // Return response
             res.json({ results: lotteryToCreate });
         } catch (error) {
+            console.log(error)
             res.status(500).json({ error: 'An error occurred while creating the lottery.'})
         }
     }
