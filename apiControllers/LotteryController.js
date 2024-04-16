@@ -27,6 +27,12 @@ class LotteryController {
      *         description: ClientId to filter by.
      *         schema:
      *           type: string
+     *       - in: query
+     *         name: state
+     *         description: State to filter by.
+     *         schema:
+     *           type: string
+     *           enum: [in progress, finished]
      *     responses:
      *       200:
      *         description: A list of lotteries was retrieved successfully.
@@ -42,6 +48,7 @@ class LotteryController {
     async getLotteries (req, res, next) {
         const filterById = req.query.id
         const filterByClientId = req.query.clientId
+        const filterByState = req.query.state
         const db = getFirestore(appFirebase)
         try {
             const listOfLotteries = []
@@ -59,6 +66,7 @@ class LotteryController {
                 const lotteriesRef = collection(db, 'Lotteries');
                 let q = query(lotteriesRef);
                 if (filterByClientId) q = query(q, where("clientId", "==", filterByClientId));
+                if (filterByState) q = query(q, where("state", "==", filterByState));
                 const lotteries = await getDocs(q);
                 lotteries.forEach(doc => {
                     const data = doc.data();
@@ -105,6 +113,12 @@ class LotteryController {
      *         description: ClientId to filter by.
      *         schema:
      *           type: string
+     *       - in: query
+     *         name: state
+     *         description: State to filter by.
+     *         schema:
+     *           type: string
+     *           enum: [in progress, finished]
      *     security:
      *       - JWTAuth: []
      *     responses:
@@ -122,6 +136,7 @@ class LotteryController {
     async getLotteriesJwt (req, res, next) {
         const filterById = req.query.id
         const filterByClientId = req.userLoggedApi
+        const filterByState = req.query.state
         const db = getFirestore(appFirebase)
         try {
             const listOfLotteries = []
@@ -139,6 +154,7 @@ class LotteryController {
                 const lotteriesRef = collection(db, 'Lotteries');
                 let q = query(lotteriesRef);
                 if (filterByClientId) q = query(q, where("clientId", "==", filterByClientId));
+                if (filterByState) q = query(q, where("state", "==", filterByState));
                 const lotteries = await getDocs(q);
                 lotteries.forEach(doc => {
                     const data = doc.data();
