@@ -235,7 +235,7 @@ class LotteryController {
      *         description: An error occurred while creating the lottery.
      */
     async createLottery (req, res, next) {
-        const { firstNumber, totalNumbers, dateOfLottery, dateLimitOfBets, betPrice, howToWin, lotteryPrize, winnerNumber } = req.body
+        const { firstNumber, totalNumbers, dateOfLottery, dateLimitOfBets, betPrice, howToWin, lotteryPrize, state, numberOfWinners, selectedNumber, result } = req.body
         const clientId = req.userLoggedApi
         const db = getFirestore(appFirebase)
         try {
@@ -251,7 +251,10 @@ class LotteryController {
                 howToWin, 
                 lotteryPrize, 
                 createdAt,
-                winnerNumber: winnerNumber || null
+                state,
+                numberOfWinners,
+                selectedNumber,
+                result
             }
             const createdLottery = await addDoc(collection(db, 'Lotteries'), lotteryToCreate)
             // Add id to createdLottery
