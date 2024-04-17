@@ -330,7 +330,7 @@ class LotteryController {
      *         description: An error occurred while updating the lottery.
      */
     async updateLottery (req, res, next) {
-        const { firstNumber, totalNumbers, dateOfLottery, dateLimitOfBets, betPrice, howToWin, lotteryPrize, winnerNumber } = req.body
+        const { firstNumber, totalNumbers, dateOfLottery, dateLimitOfBets, betPrice, howToWin, lotteryPrize, state, result, closedAt, winner } = req.body
         const clientId = req.userLoggedApi
         const { id } = req.params;
         const db = getFirestore(appFirebase);
@@ -356,7 +356,10 @@ class LotteryController {
             if (betPrice) lotteryToUpdate.betPrice = betPrice;
             if (howToWin) lotteryToUpdate.howToWin = howToWin;
             if (lotteryPrize) lotteryToUpdate.lotteryPrize = lotteryPrize;
-            if (winnerNumber) lotteryToUpdate.winnerNumber = winnerNumber;
+            if (state) lotteryToUpdate.state = state;
+            if (result) lotteryToUpdate.result = result;
+            if (closedAt) lotteryToUpdate.closedAt = closedAt;
+            if (winner) lotteryToUpdate.winner = winner;
             lotteryToUpdate.modifiedAt = new Date().toISOString()
             await updateDoc(lotteryRef, lotteryToUpdate);
             res.json({ results: { id, ...lotteryToUpdate } });
