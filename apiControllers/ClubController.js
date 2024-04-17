@@ -408,7 +408,7 @@ class ClubController {
      *         description: An error occurred while updating the club.
      */
     async updateClub (req, res, next) {
-        const { match1HomeTeam, match1AwayTeam, match1Date, match1Hour, match2HomeTeam, match2AwayTeam, match2Date, match2hour, betPrice, accumulatedPrize, accumulatedJackpot, limitDateForBets, limitHourForBets, state, numberOfWinners, match1HomeTeamResult, match2HomeTeamResult, match1AwayTeamResult, match2AwayTeamResult } = req.body
+        const { match1HomeTeam, match1AwayTeam, match1Date, match1Hour, match2HomeTeam, match2AwayTeam, match2Date, match2hour, betPrice, accumulatedPrize, accumulatedJackpot, limitDateForBets, limitHourForBets, state, numberOfWinners, match1HomeTeamResult, match2HomeTeamResult, match1AwayTeamResult, match2AwayTeamResult, closedAt, winners } = req.body
         const { id } = req.params;
         // The clientId comes in req.userLoggedApi
         const clientId = req.userLoggedApi
@@ -437,16 +437,18 @@ class ClubController {
             if (match2Date) clubToUpdate.match2Date = match2Date;
             if (match2hour) clubToUpdate.match2hour = match2hour;
             if (betPrice) clubToUpdate.betPrice = betPrice;
-            if (accumulatedPrize) clubToUpdate.accumulatedPrize = accumulatedPrize;
+            accumulatedPrize ? clubToUpdate.accumulatedPrize = accumulatedPrize : clubToUpdate.accumulatedPrize = 0
             if (accumulatedJackpot) clubToUpdate.accumulatedJackpot = accumulatedJackpot;
             if (limitDateForBets) clubToUpdate.limitDateForBets = limitDateForBets;
             if (limitHourForBets) clubToUpdate.limitHourForBets = limitHourForBets;
             if (state) clubToUpdate.state = state;
             if (numberOfWinners) clubToUpdate.numberOfWinners = numberOfWinners;
-            if (match1HomeTeamResult) clubToUpdate.match1HomeTeamResult = match1HomeTeamResult;
-            if (match2HomeTeamResult) clubToUpdate.match2HomeTeamResult = match2HomeTeamResult;
-            if (match2AwayTeamResult) clubToUpdate.match2AwayTeamResult = match2AwayTeamResult;
-            if (match1AwayTeamResult) clubToUpdate.match1AwayTeamResult = match1AwayTeamResult;
+            match1HomeTeamResult ? clubToUpdate.match1HomeTeamResult = match1HomeTeamResult : clubToUpdate.match1HomeTeamResult = 0
+            match2HomeTeamResult ? clubToUpdate.match2HomeTeamResult = match2HomeTeamResult : clubToUpdate.match2HomeTeamResult = 0
+            match1AwayTeamResult ? clubToUpdate.match1AwayTeamResult = match1AwayTeamResult : clubToUpdate.match1AwayTeamResult = 0
+            match2AwayTeamResult ? clubToUpdate.match2AwayTeamResult = match2AwayTeamResult : clubToUpdate.match2AwayTeamResult = 0
+            if (winners) clubToUpdate.winners = winners
+            if (closedAt) clubToUpdate.closedAt = closedAt;
             clubToUpdate.modifiedAt = new Date().toISOString()
             await updateDoc(clubRef, clubToUpdate);
             res.json({ results: { id, ...clubToUpdate } });
