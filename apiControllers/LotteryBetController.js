@@ -65,7 +65,7 @@ class LotteryBetController {
             } else {
                 const lotteryBetsRef = collection(db, 'LotteryBets');
                 let q = query(lotteryBetsRef);
-                if (filterByLotteryId) q = query(q, where("clubId", "==", filterByLotteryId));
+                if (filterByLotteryId) q = query(q, where("lotteryId", "==", filterByLotteryId));
                 if (filterByUserEmail) q = query(q, where("userEmail", "==", filterByUserEmail));
                 const lotteryBets = await getDocs(q);
                 lotteryBets.forEach(doc => {
@@ -158,7 +158,7 @@ class LotteryBetController {
             } else {
                 const lotteryBetsRef = collection(db, 'LotteryBets');
                 let q = query(lotteryBetsRef);
-                if (filterByLotteryId) q = query(q, where("clubId", "==", filterByLotteryId));
+                if (filterByLotteryId) q = query(q, where("lotteryId", "==", filterByLotteryId));
                 if (filterByUserEmail) q = query(q, where("userEmail", "==", filterByUserEmail));
                 const lotteryBets = await getDocs(q);
                 lotteryBets.forEach(doc => {
